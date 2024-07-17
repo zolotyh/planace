@@ -1,19 +1,21 @@
 (ns com.zolotyh.planace.app
-  (:require [com.biffweb :as biff :refer [q]]
-            [com.zolotyh.planace.middleware :as mid]
-            [com.zolotyh.planace.ui :as ui]
-            [com.zolotyh.planace.settings :as settings]
-            [rum.core :as rum]
-            [xtdb.api :as xt]
-            [ring.adapter.jetty9 :as jetty]
-            [cheshire.core :as cheshire]))
+  (:require
+   [cheshire.core :as cheshire]
+   [com.biffweb :as biff :refer [q]]
+   [com.zolotyh.planace.middleware :as mid]
+   [com.zolotyh.planace.settings :as settings]
+   [com.zolotyh.planace.ui :as ui]
+   [com.zolotyh.planace.ui.pocker :refer [card]]
+   [ring.adapter.jetty9 :as jetty]
+   [rum.core :as rum]
+   [xtdb.api :as xt]))
 
 (defn set-foo [{:keys [session params] :as ctx}]
   (biff/submit-tx ctx
-    [{:db/op :update
-      :db/doc-type :user
-      :xt/id (:uid session)
-      :user/foo (:foo params)}])
+                  [{:db/op :update
+                    :db/doc-type :user
+                    :xt/id (:uid session)
+                    :user/foo (:foo params)}])
   {:status 303
    :headers {"location" "/app"}})
 
@@ -34,10 +36,10 @@
 
 (defn set-bar [{:keys [session params] :as ctx}]
   (biff/submit-tx ctx
-    [{:db/op :update
-      :db/doc-type :user
-      :xt/id (:uid session)
-      :user/bar (:bar params)}])
+                  [{:db/op :update
+                    :db/doc-type :user
+                    :xt/id (:uid session)
+                    :user/bar (:bar params)}])
   (biff/render (bar-form {:value (:bar params)})))
 
 (defn message [{:msg/keys [text sent-at]}]
@@ -59,10 +61,10 @@
 (defn send-message [{:keys [session] :as ctx} {:keys [text]}]
   (let [{:keys [text]} (cheshire/parse-string text true)]
     (biff/submit-tx ctx
-      [{:db/doc-type :msg
-        :msg/user (:uid session)
-        :msg/text text
-        :msg/sent-at :db/now}])))
+                    [{:db/doc-type :msg
+                      :msg/user (:uid session)
+                      :msg/text text
+                      :msg/sent-at :db/now}])))
 
 (defn chat [{:keys [biff/db]}]
   (let [messages (q db
@@ -71,7 +73,7 @@
                       :where [[msg :msg/sent-at t]
                               [(<= t0 t)]]}
                     (biff/add-seconds (java.util.Date.) (* -60 10)))]
-    [:div {:hx-ext "ws" :ws-connect "/app/chat"}
+    [:div {:hx-ext "ws" :ws-connect "/app/ws"}
      [:form.mb-0 {:ws-send true
                   :_ "on submit set value of #message to ''"}
       [:label.block {:for "message"} "Write a message"]
@@ -96,6 +98,7 @@
     (ui/page
      {}
      [:div "Signed in as " email ". "
+      (card 1)
       (biff/form
        {:action "/auth/signout"
         :class "inline"}
@@ -148,6 +151,6 @@
             ["" {:get app}]
             ["/set-foo" {:post set-foo}]
             ["/set-bar" {:post set-bar}]
-            ["/chat" {:get ws-handler}]]
+            ["/ws" {:get ws-handler}]]
    :api-routes [["/api/echo" {:post echo}]]
    :on-tx notify-clients})
