@@ -19,7 +19,7 @@
                       :room/user (:uid session)
                       :room/name (:name params)
                       :room/created-at :db/now}])
-    {:status 302
+    {:status 200
      :headers {"HX-Redirect" (str "http://localhost:8080/app/room/" id) "HX-Location" (str "http://localhost:8080/app/room/" id) "location"
                (str
                 "/app/room/" id)}}))
