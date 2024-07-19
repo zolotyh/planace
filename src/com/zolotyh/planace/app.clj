@@ -10,6 +10,34 @@
    [rum.core :as rum]
    [xtdb.api :as xt]))
 
+(defn create-room [{:keys [session params] :as ctx}]
+  (let [id (random-uuid)]
+    (biff/submit-tx ctx
+                    [{:db/op :create
+                      :db/doc-type :room
+                      :xt/id (:uid id)
+                      :room/user (:uid session)
+                      :room/name (:name params)
+                      :room/created-at :db/now}])
+    {:status 302
+     :headers {"HX-Redirect" (str "http://localhost:8080/app/room/" id) "HX-Location" (str "http://localhost:8080/app/room/" id) "location"
+               (str
+                "/app/room/" id)}}))
+
+(defn room-form [{:keys [value]}]
+  (biff/form
+   {:hx-post "/app/create-room"}
+   [:label.block {:for "name"} "Room name"
+    [:span.font-mono (pr-str value)]]
+   [:.h-1]
+   [:.flex
+    [:input.w-full#bar {:type "text" :name "name" :value value}]
+    [:.w-3]
+    [:button.btn {:type "submit"} "Update"]]
+   [:.h-1]
+   [:.text-sm.text-gray-600
+    "This demonstrates updating a value with HTMX."]))
+
 (defn set-foo [{:keys [session params] :as ctx}]
   (biff/submit-tx ctx
                   [{:db/op :update
@@ -38,7 +66,7 @@
   (biff/submit-tx ctx
                   [{:db/op :update
                     :db/doc-type :user
-                    :xt/id (:uid session)
+                    :xt/id (:uid (random-uuid))
                     :user/bar (:bar params)}])
   (biff/render (bar-form {:value (:bar params)})))
 
@@ -119,6 +147,7 @@
       [:.text-sm.text-gray-600
        "This demonstrates updating a value with a plain old form."])
      [:.h-6]
+     (room-form {:value ""})
      (bar-form {:value bar})
      [:.h-6]
      (chat ctx))))
@@ -145,12 +174,19 @@
    :headers {"content-type" "application/json"}
    :body params})
 
+(defn- render-room [{:keys [path-params]}]
+  (ui/page
+   {:base/title (str (:token path-params))}
+   [:p  "token is" (:token path-params)]))
+
 (def module
   {:static {"/about/" about-page}
    :routes ["/app" {:middleware [mid/wrap-signed-in]}
             ["" {:get app}]
+            ["/room/:token" {:get render-room}]
             ["/set-foo" {:post set-foo}]
             ["/set-bar" {:post set-bar}]
+            ["/create-room" {:post create-room}]
             ["/ws" {:get ws-handler}]]
    :api-routes [["/api/echo" {:post echo}]]
    :on-tx notify-clients})
