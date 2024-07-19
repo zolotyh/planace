@@ -9,6 +9,13 @@
           [:user/foo {:optional true} :string]
           [:user/bar {:optional true} :string]]
 
+   :room/id :uuid
+   :room [:map {:closed true}
+          [:xt/id       :room/id]
+          [:room/user    :user/id]
+          [:room/name    :string]
+          [:room/created-at inst?]]
+
    :msg/id :uuid
    :msg [:map {:closed true}
          [:xt/id       :msg/id]
