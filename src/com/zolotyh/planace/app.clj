@@ -24,31 +24,11 @@
 (defn room-form [{:keys [value]}]
   (biff/form
    {:hx-post "/app/create-room"}
-   [:label.block {:for "name"} "Room name"
-    [:span.font-mono (pr-str value)]]
-   [:.h-1]
+   [:label.block {:for "name"} "Room name"]
    [:.flex
     [:input.w-full#bar {:type "text" :name "name" :value value}]
     [:.w-3]
-    [:button.btn {:type "submit"} "Update"]]
-   [:.h-1]
-   [:.text-sm.text-gray-600
-    "This demonstrates updating a value with HTMX."]))
-
-(defn bar-form [{:keys [value]}]
-  (biff/form
-   {:hx-post "/app/set-bar"
-    :hx-swap "outerHTML"}
-   [:label.block {:for "bar"} "Bar: "
-    [:span.font-mono (pr-str value)]]
-   [:.h-1]
-   [:.flex
-    [:input.w-full#bar {:type "text" :name "bar" :value value}]
-    [:.w-3]
-    [:button.btn {:type "submit"} "Update"]]
-   [:.h-1]
-   [:.text-sm.text-gray-600
-    "This demonstrates updating a value with HTMX."]))
+    [:button.btn.btn-primary {:type "submit"} "Update"]]))
 
 (defn message [{:msg/keys [text sent-at]}]
   [:.mt-3 {:_ "init send newMessage to #message-header"}
@@ -81,25 +61,7 @@
                       :where [[msg :msg/sent-at t]
                               [(<= t0 t)]]}
                     (biff/add-seconds (java.util.Date.) (* -60 10)))]
-    [:div {:hx-ext "ws" :ws-connect "/app/ws"}
-     [:form.mb-0 {:ws-send true
-                  :_ "on submit set value of #message to ''"}
-      [:label.block {:for "message"} "Write a message"]
-      [:.h-1]
-      [:textarea.w-full#message {:name "text"}]
-      [:.h-1]
-      [:.text-sm.text-gray-600
-       "Sign in with an incognito window to have a conversation with yourself."]
-      [:.h-2]
-      [:div [:button.btn {:type "submit"} "Send message"]]]
-     [:.h-6]
-     [:div#message-header
-      {:_ "on newMessage put 'Messages sent in the past 10 minutes:' into me"}
-      (if (empty? messages)
-        "No messages yet."
-        "Messages sent in the past 10 minutes:")]
-     [:div#messages
-      (map message (sort-by :msg/sent-at #(compare %2 %1) messages))]]))
+    [:div {:hx-ext "ws" :ws-connect "/app/ws"}]))
 
 (defn app [{:keys [session biff/db] :as ctx}]
   (let [{:user/keys [email foo bar]} (xt/entity db (:uid session))]
@@ -113,22 +75,7 @@
        [:button.text-blue-500.hover:text-blue-800 {:type "submit"}
         "Sign out"])
       "."]
-     (room-form {:value ""})
-     (chat ctx))))
-
-(defn add-new-connection [room-id user-id collection conn]
-  (update-in collection [(keyword room-id) (keyword user-id)] conn))
-
-(defn ws-room [{:keys [com.zolotyh.planace/chat-clients path-params] :as ctx}]
-  {:status 101
-   :headers {"upgrade" "websocket"
-             "connection" "upgrade"}
-   :ws {:on-connect (fn [ws]
-                      (swap! chat-clients conj ws))
-        :on-text (fn [ws text-message]
-                   (send-message ctx {:ws ws :text text-message}))
-        :on-close (fn [ws status-code reason]
-                    (swap! chat-clients disj ws))}})
+     (room-form {:value ""}))))
 
 (defn ws-handler [{:keys [com.zolotyh.planace/chat-clients] :as ctx}]
   {:status 101
@@ -154,7 +101,7 @@
 
 (defn- render-room [{:keys [path-params biff/db]}]
   (let [room (xt/entity db (parse-uuid
-                            (:token path-params)))]
+                            (:room-id path-params)))]
     (ui/page
      {:base/title (str (:token path-params))}
      (voter-list voters-demo-list)
@@ -164,9 +111,8 @@
   {:static {"/about/" about-page}
    :routes ["/app" {:middleware [mid/wrap-signed-in]}
             ["" {:get app}]
-            ["/room/:token" {:get render-room}]
+            ["/room/:room-id" {:get render-room}]
             ["/create-room" {:post create-room}]
-            ["/ws/:room-id" {:get ws-room}]
             ["/ws" {:get ws-handler}]]
    :api-routes [["/api/echo" {:post echo}]]
    :on-tx notify-clients})

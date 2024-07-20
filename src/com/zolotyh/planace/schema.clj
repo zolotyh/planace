@@ -16,10 +16,10 @@
           [:xt/id       :room/id]
           [:room/user    :user/id]
           [:room/name    :string]
-          [:room/items [:map {:closed true}
-                        [:voters [:map {:closed true}
-                                  [:user :user/id]
-                                  [:vote int]]]]]
+          ;; [:room/items [:map {:closed true}
+          ;;               [:voters [:map {:closed true}
+          ;;                         [:user :user/id]
+          ;;                         [:vote int]]]]]
           [:room/created-at inst?]]
 
    :msg/id :uuid

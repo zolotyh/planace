@@ -14,14 +14,14 @@
   [:div.px-3.py-2 first-name last-name vote])
 
 (defn not-voted [{:keys [first-name last-name vote]}]
-  [:div.px-3.py-2 first-name last-name vote])
+  [:div.px-3.px-2 first-name last-name vote])
 
 (defn voter [{:keys [voted?] :as ctx}]
   (if voted?
     (voted ctx) (not-voted ctx)))
 
 (defn voter-list [voters-list]
-  [:div.px-2.py-1 (map voter voters-list)])
+  [:div.px-2.py-1.d-flex.flex-row (map voter voters-list)])
 
 (defn css-path []
   (if-some [last-modified (some-> (io/resource "public/css/main.css")
@@ -50,7 +50,9 @@
                      :image "https://clojure.org/images/clojure-logo-120b.png"})
        (update :base/head (fn [head]
                             (concat [[:link {:rel "stylesheet" :href (css-path)}]
+                                     [:link {:rel "stylesheet" :href "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"}]
                                      [:script {:src (js-path)}]
+                                     [:script {:src "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"}]
                                      [:script {:src "https://unpkg.com/htmx.org@2.0.1"}]
                                      [:script {:src "https://unpkg.com/htmx.org/dist/ext/ws.js"}]
                                      [:script {:src "https://unpkg.com/hyperscript.org@0.9.8"}]
@@ -64,7 +66,7 @@
   (base
    ctx
    [:.flex-grow]
-   [:.p-3.mx-auto.max-w-screen-sm.w-full
+   [:.p-3.mx-auto.max-w-screen-2xl.w-full
     (when (bound? #'csrf/*anti-forgery-token*)
       {:hx-headers (cheshire/generate-string
                     {:x-csrf-token csrf/*anti-forgery-token*}) :hx-boost 1})
