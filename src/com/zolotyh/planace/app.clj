@@ -3,6 +3,7 @@
    [cheshire.core :as cheshire]
    [com.biffweb :as biff :refer [q]]
    [com.zolotyh.planace.middleware :as mid]
+   [com.zolotyh.planace.pocker :refer [poker]]
    [com.zolotyh.planace.settings :as settings]
    [com.zolotyh.planace.ui :as ui :refer [voter-list voters-demo-list]]
    [com.zolotyh.planace.ui.pocker :refer [card]]
@@ -111,6 +112,7 @@
   {:static {"/about/" about-page}
    :routes ["/app" {:middleware [mid/wrap-signed-in]}
             ["" {:get app}]
+            ["/poker" {:get poker}]
             ["/room/:room-id" {:get render-room}]
             ["/create-room" {:post create-room}]
             ["/ws" {:get ws-handler}]]
