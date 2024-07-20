@@ -4,7 +4,7 @@
    [com.biffweb :as biff :refer [q]]
    [com.zolotyh.planace.middleware :as mid]
    [com.zolotyh.planace.settings :as settings]
-   [com.zolotyh.planace.ui :as ui]
+   [com.zolotyh.planace.ui :as ui :refer [voter-list voters-demo-list]]
    [com.zolotyh.planace.ui.pocker :refer [card]]
    [ring.adapter.jetty9 :as jetty]
    [rum.core :as rum]
@@ -34,15 +34,6 @@
    [:.h-1]
    [:.text-sm.text-gray-600
     "This demonstrates updating a value with HTMX."]))
-
-(defn set-foo [{:keys [session params] :as ctx}]
-  (biff/submit-tx ctx
-                  [{:db/op :update
-                    :db/doc-type :user
-                    :xt/id (:uid session)
-                    :user/foo (:foo params)}]
-                  {:status 303
-                   :headers {"location" "/app"}}))
 
 (defn bar-form [{:keys [value]}]
   (biff/form
@@ -125,6 +116,20 @@
      (room-form {:value ""})
      (chat ctx))))
 
+(defn add-new-connection [room-id user-id collection conn]
+  (update-in collection [(keyword room-id) (keyword user-id)] conn))
+
+(defn ws-room [{:keys [com.zolotyh.planace/chat-clients path-params] :as ctx}]
+  {:status 101
+   :headers {"upgrade" "websocket"
+             "connection" "upgrade"}
+   :ws {:on-connect (fn [ws]
+                      (swap! chat-clients conj ws))
+        :on-text (fn [ws text-message]
+                   (send-message ctx {:ws ws :text text-message}))
+        :on-close (fn [ws status-code reason]
+                    (swap! chat-clients disj ws))}})
+
 (defn ws-handler [{:keys [com.zolotyh.planace/chat-clients] :as ctx}]
   {:status 101
    :headers {"upgrade" "websocket"
@@ -152,6 +157,7 @@
                             (:token path-params)))]
     (ui/page
      {:base/title (str (:token path-params))}
+     (voter-list voters-demo-list)
      [:p "room" (:room/name room)])))
 
 (def module
@@ -160,6 +166,7 @@
             ["" {:get app}]
             ["/room/:token" {:get render-room}]
             ["/create-room" {:post create-room}]
+            ["/ws/:room-id" {:get ws-room}]
             ["/ws" {:get ws-handler}]]
    :api-routes [["/api/echo" {:post echo}]]
    :on-tx notify-clients})

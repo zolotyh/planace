@@ -6,6 +6,8 @@
           [:xt/id                     :user/id]
           [:user/email                :string]
           [:user/joined-at            inst?]
+          [:user/first-name {:optional true} :string]
+          [:user/last-name  {:optional true} :string]
           [:user/foo {:optional true} :string]
           [:user/bar {:optional true} :string]]
 
@@ -14,6 +16,10 @@
           [:xt/id       :room/id]
           [:room/user    :user/id]
           [:room/name    :string]
+          [:room/items [:map {:closed true}
+                        [:voters [:map {:closed true}
+                                  [:user :user/id]
+                                  [:vote int]]]]]
           [:room/created-at inst?]]
 
    :msg/id :uuid

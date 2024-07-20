@@ -1,0 +1,13 @@
+{
+  "vote-list": {
+    "id12312": {
+      "title": "Hello",
+      "voters": [
+        {
+          "user": "1",
+          "vote": 1
+        }
+      ]
+    }
+  }
+}

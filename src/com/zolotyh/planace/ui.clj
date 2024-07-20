@@ -11,10 +11,10 @@
   (take 10 (iterate identity {:voted true :first-name "John" :last-name "Doe" :vote 1})))
 
 (defn voted [{:keys [first-name last-name vote]}]
-  [:div first-name last-name vote])
+  [:div.px-3.py-2 first-name last-name vote])
 
 (defn not-voted [{:keys [first-name last-name vote]}]
-  [:div first-name last-name vote])
+  [:div.px-3.py-2 first-name last-name vote])
 
 (defn voter [{:keys [voted?] :as ctx}]
   (if voted?
