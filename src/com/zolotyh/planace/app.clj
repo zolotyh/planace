@@ -12,17 +12,14 @@
 
 (defn create-room [{:keys [session params] :as ctx}]
   (let [id (random-uuid)]
-    (biff/submit-tx ctx
-                    [{:db/op :create
-                      :db/doc-type :room
-                      :xt/id (:uid id)
-                      :room/user (:uid session)
-                      :room/name (:name params)
-                      :room/created-at :db/now}])
+    (biff/submit-tx ctx [{:db/doc-type :room
+                          :db/op :create
+                          :xt/id id
+                          :room/user (:uid  session)
+                          :room/name (:name params)
+                          :room/created-at :db/now}])
     {:status 200
-     :headers {"HX-Redirect" (str "http://localhost:8080/app/room/" id) "HX-Location" (str "http://localhost:8080/app/room/" id) "location"
-               (str
-                "/app/room/" id)}}))
+     :headers {"HX-Location" (str "http://localhost:8080/app/room/" id)}}))
 
 (defn room-form [{:keys [value]}]
   (biff/form
@@ -43,9 +40,9 @@
                   [{:db/op :update
                     :db/doc-type :user
                     :xt/id (:uid session)
-                    :user/foo (:foo params)}])
-  {:status 303
-   :headers {"location" "/app"}})
+                    :user/foo (:foo params)}]
+                  {:status 303
+                   :headers {"location" "/app"}}))
 
 (defn bar-form [{:keys [value]}]
   (biff/form
@@ -61,14 +58,6 @@
    [:.h-1]
    [:.text-sm.text-gray-600
     "This demonstrates updating a value with HTMX."]))
-
-(defn set-bar [{:keys [session params] :as ctx}]
-  (biff/submit-tx ctx
-                  [{:db/op :update
-                    :db/doc-type :user
-                    :xt/id (:uid (random-uuid))
-                    :user/bar (:bar params)}])
-  (biff/render (bar-form {:value (:bar params)})))
 
 (defn message [{:msg/keys [text sent-at]}]
   [:.mt-3 {:_ "init send newMessage to #message-header"}
@@ -133,23 +122,7 @@
        [:button.text-blue-500.hover:text-blue-800 {:type "submit"}
         "Sign out"])
       "."]
-     [:.h-6]
-     (biff/form
-      {:action "/app/set-foo"}
-      [:label.block {:for "foo"} "Foo: "
-       [:span.font-mono (pr-str foo)]]
-      [:.h-1]
-      [:.flex
-       [:input.w-full#foo {:type "text" :name "foo" :value foo}]
-       [:.w-3]
-       [:button.btn {:type "submit"} "Update"]]
-      [:.h-1]
-      [:.text-sm.text-gray-600
-       "This demonstrates updating a value with a plain old form."])
-     [:.h-6]
      (room-form {:value ""})
-     (bar-form {:value bar})
-     [:.h-6]
      (chat ctx))))
 
 (defn ws-handler [{:keys [com.zolotyh.planace/chat-clients] :as ctx}]
@@ -174,18 +147,18 @@
    :headers {"content-type" "application/json"}
    :body params})
 
-(defn- render-room [{:keys [path-params]}]
-  (ui/page
-   {:base/title (str (:token path-params))}
-   [:p  "token is" (:token path-params)]))
+(defn- render-room [{:keys [path-params biff/db]}]
+  (let [room (xt/entity db (parse-uuid
+                            (:token path-params)))]
+    (ui/page
+     {:base/title (str (:token path-params))}
+     [:p "room" (:room/name room)])))
 
 (def module
   {:static {"/about/" about-page}
    :routes ["/app" {:middleware [mid/wrap-signed-in]}
             ["" {:get app}]
             ["/room/:token" {:get render-room}]
-            ["/set-foo" {:post set-foo}]
-            ["/set-bar" {:post set-bar}]
             ["/create-room" {:post create-room}]
             ["/ws" {:get ws-handler}]]
    :api-routes [["/api/echo" {:post echo}]]
