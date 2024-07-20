@@ -11,6 +11,16 @@
           [:user/foo {:optional true} :string]
           [:user/bar {:optional true} :string]]
 
+   :vote/id :uuid
+   :vote [:map {:closed true}
+          [:xt/id       :vote/id]
+          [:vote/owner    :user/id]
+          [:vote/results [:map-of :user/id [:map {:closed true}
+                                            [:vote int]]]]
+          [:vote/type [:enum :fib :t-shirts :simple]]
+          [:vote/title    :string]
+          [:vote/updated-at inst?]]
+
    :room/id :uuid
    :room [:map {:closed true}
           [:xt/id       :room/id]
