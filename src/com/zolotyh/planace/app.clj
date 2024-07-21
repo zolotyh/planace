@@ -7,7 +7,6 @@
    [com.zolotyh.planace.settings :as settings]
    [com.zolotyh.planace.ui :as ui]
    [com.zolotyh.planace.ui.app :refer [voter-list voters-demo-list]]
-   [com.zolotyh.planace.ui.pocker :refer [card]]
    [ring.adapter.jetty9 :as jetty]
    [rum.core :as rum]
    [xtdb.api :as xt]))
@@ -70,7 +69,6 @@
     (ui/page
      {}
      [:div "Signed in as " email ". "
-      (card 1)
       (biff/form
        {:action "/auth/signout"
         :class "inline"}
