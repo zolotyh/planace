@@ -1,27 +1,41 @@
 ;; Biff transaction. See https://biffweb.com/docs/reference/transactions/
 [{:db/doc-type :user
-  :xt/id :db.id/user-a
-  :user/email "a@example.com"
+  :xt/id #uuid "540c203e-a340-43b9-9d78-c7880e17cc4a"
+  :user/email "spam@zolotyh.com"
+  :user/first-name "Алексей"
+  :user/last-name "Золотых"
   :user/joined-at :db/now}
 
- {:db/doc-type :msg
-  :msg/user :db.id/user-a
-  :msg/text "hello there"
-  :msg/sent-at :db/now}
+ {:db/doc-type :user
+  :xt/id #uuid "45ce199c-c30a-4ea3-b1c3-d54252c5c2ca"
+  :user/email "spam2@zolotyh.com"
+  :user/first-name "Иван"
+  :user/last-name "Иванов"
+  :user/joined-at :db/now}
+
+ {:db/doc-type :user
+  :xt/id #uuid "44c0600b-3d2f-412e-8645-26b84a82e6ae"
+  :user/email "spam3@zolotyh.com"
+  :user/first-name "Петр"
+  :user/last-name "Петров"
+  :user/joined-at :db/now}
 
  {:db/doc-type :vote
-  :xt/id :db.id/vote-a,
+  :xt/id #uuid "21fa7012-3abe-4c1a-8ad6-bdd2e83515f0" ,
   :vote/owner :db.id/user-a,
-  :vote/results {:db.id/user-a {:vote 1}}
-  :vote/room :db.id/room-a,
+  :vote/results {#uuid "540c203e-a340-43b9-9d78-c7880e17cc4a" {:vote 1 :first-name "Алексей" :last-name "Золотых"}
+                 #uuid "45ce199c-c30a-4ea3-b1c3-d54252c5c2ca" {:vote 1 :first-name "Иван" :last-name "Иванов"}
+                 #uuid "44c0600b-3d2f-412e-8645-26b84a82e6ae" {:vote 1 :first-name "Петр" :last-name "Петров"}}
+
+  :vote/room #uuid "8ce18a78-0146-41ac-8725-a0ae457741fd"
   :vote/type :fib,
   :vote/title "Vote 1",
   :vote/updated-at :db/now}
 
  {:db/doc-type :room
-  :xt/id :db.id/room-a
-  :room/user :db.id/user-a
-  :room/active-vote :db.id/vote-a
+  :xt/id #uuid "8ce18a78-0146-41ac-8725-a0ae457741fd"
+  :room/user #uuid "540c203e-a340-43b9-9d78-c7880e17cc4a"
+  :room/active-vote #uuid "21fa7012-3abe-4c1a-8ad6-bdd2e83515f0"
   :room/name "Room 1"
   :room/created-at :db/now
   :room/update-at :db/now}]

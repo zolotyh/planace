@@ -65,10 +65,10 @@
     [:div {:hx-ext "ws" :ws-connect "/app/ws"}]))
 
 (defn app [{:keys [session biff/db] :as ctx}]
-  (let [{:user/keys [email foo bar]} (xt/entity db (:uid session))]
+  (let [{:user/keys [email foo bar] as ctx} (xt/entity db (:uid session))]
     (ui/page
      {}
-     [:div "Signed in as " email ". "
+     [:div "Signed in as " email ". " (:uid session)
       (biff/form
        {:action "/auth/signout"
         :class "inline"}
