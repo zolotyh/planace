@@ -102,13 +102,11 @@
 
 (defn render-room [{:keys [path-params biff/db]}]
   (let [room (xt/entity db (parse-uuid (:room-id path-params)))
-        vote (xt/entity db (:room/active-vote room))
-        vote-1 (lookup-all db :vote/title "Vote 1")]
+        vote (xt/entity db (:room/active-vote room))]
     (ui/page
      {:base/title (str (:token path-params))}
      (voter-list voters-demo-list)
      [:div "vote: " (:vote/title vote) "active vote id: " (:room/active-vote room)]
-     (map (fn [n] [:div (:xt/id n) " vote " (:vote/title n)]) vote-1)
      [:p "room: " (:room/name room)])))
 
 (def module
