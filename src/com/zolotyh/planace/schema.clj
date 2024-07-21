@@ -21,7 +21,7 @@
           [:room/update-at inst?]]
 
    :vote/id :uuid
-   :vote [:map {:closed false}
+   :vote [:map {:closed true}
           [:xt/id       :vote/id]
           [:vote/owner    :user/id]
           [:vote/results [:map-of :user/id [:map {:closed false}
