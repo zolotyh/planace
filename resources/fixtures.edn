@@ -22,10 +22,10 @@
 
  {:db/doc-type :vote
   :xt/id #uuid "21fa7012-3abe-4c1a-8ad6-bdd2e83515f0" ,
-  :vote/owner :db.id/user-a,
+  :vote/owner #uuid "540c203e-a340-43b9-9d78-c7880e17cc4a",
   :vote/results {#uuid "540c203e-a340-43b9-9d78-c7880e17cc4a" {:vote 1 :first-name "Алексей" :last-name "Золотых"}
-                 #uuid "45ce199c-c30a-4ea3-b1c3-d54252c5c2ca" {:vote 1 :first-name "Иван" :last-name "Иванов"}
-                 #uuid "44c0600b-3d2f-412e-8645-26b84a82e6ae" {:vote 1 :first-name "Петр" :last-name "Петров"}}
+                 #uuid "45ce199c-c30a-4ea3-b1c3-d54252c5c2ca" {:vote 2 :first-name "Иван" :last-name "Иванов"}
+                 #uuid "44c0600b-3d2f-412e-8645-26b84a82e6ae" {:vote 3 :first-name "Петр" :last-name "Петров"}}
 
   :vote/room #uuid "8ce18a78-0146-41ac-8725-a0ae457741fd"
   :vote/type :fib,

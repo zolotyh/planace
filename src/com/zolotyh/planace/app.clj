@@ -104,7 +104,7 @@
         vote (xt/entity db (:room/active-vote room))]
     (ui/page
      {:base/title (str (:token path-params))}
-     (voter-list voters-demo-list)
+     (voter-list (vals (:vote/results vote)))
      [:div "vote: " (:vote/title vote) "active vote id: " (:room/active-vote room)]
      [:p "room: " (:room/name room)])))
 
