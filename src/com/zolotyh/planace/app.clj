@@ -1,11 +1,12 @@
 (ns com.zolotyh.planace.app
   (:require
    [cheshire.core :as cheshire]
-   [com.biffweb :as biff :refer [lookup-all q]]
+   [com.biffweb :as biff :refer [q]]
    [com.zolotyh.planace.middleware :as mid]
    [com.zolotyh.planace.pocker :refer [poker]]
    [com.zolotyh.planace.settings :as settings]
-   [com.zolotyh.planace.ui :as ui :refer [voter-list voters-demo-list]]
+   [com.zolotyh.planace.ui :as ui]
+   [com.zolotyh.planace.ui.app :refer [voter-list voters-demo-list]]
    [com.zolotyh.planace.ui.pocker :refer [card]]
    [ring.adapter.jetty9 :as jetty]
    [rum.core :as rum]
