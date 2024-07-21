@@ -2,9 +2,31 @@
 [{:db/doc-type :user
   :xt/id :db.id/user-a
   :user/email "a@example.com"
-  :user/foo "Some Value"
   :user/joined-at :db/now}
+
  {:db/doc-type :msg
   :msg/user :db.id/user-a
   :msg/text "hello there"
-  :msg/sent-at :db/now}]
+  :msg/sent-at :db/now}
+
+ {:db/doc-type :vote
+  :xt/id :db.id/vote-a,
+  :vote/owner :db.id/user-a,
+  :vote/results {:db.id/user-a {:vote 1}}
+  :vote/room :db.id/room-a,
+  :vote/type :fib,
+  :vote/title "Vote 1",
+  :vote/updated-at :db/now}
+
+ {:db/doc-type :room
+  :xt/id :db.id/room-a
+  :room/user :db.id/user-a
+  :room/active-vote :db.id/vote-a
+  :room/name "Room 1"
+  :room/created-at :db/now
+  :room/update-at :db/now}]
+
+
+
+
+
