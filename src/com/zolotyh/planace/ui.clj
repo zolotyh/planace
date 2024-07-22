@@ -42,7 +42,7 @@
                    [:script {:src (js-path)}]
                    [:script {:src "https://unpkg.com/htmx.org@2.0.1"}]
                    [:script {:src "https://unpkg.com/htmx-ext-ws@2.0.0/ws.js"}]
-                   [:script {:src "https://unpkg.com/hyperscript.org@0.9.8"}]
+                   [:script {:src "https://unpkg.com/hyperscript.org@0.9.12"}]
                    (when recaptcha
                      [:script
                       {:src "https://www.google.com/recaptcha/api.js",
