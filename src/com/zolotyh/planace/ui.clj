@@ -1,8 +1,9 @@
 (ns com.zolotyh.planace.ui
   (:require [cheshire.core :as cheshire]
             [clojure.java.io :as io]
-            [com.zolotyh.planace.settings :as settings]
             [com.biffweb :as biff]
+            [com.zolotyh.planace.settings :as settings]
+            [com.zolotyh.planace.ui.ui :refer [footer header team-name]]
             [ring.middleware.anti-forgery :as csrf]
             [ring.util.response :as ring-response]
             [rum.core :as rum]))
@@ -59,14 +60,23 @@
             head))))
     body))
 
+(defn security-headers
+  []
+  (when (bound? #'csrf/*anti-forgery-token*)
+    {:hx-headers (cheshire/generate-string {:x-csrf-token
+                                              csrf/*anti-forgery-token*})}))
+
 (defn page
   [ctx & body]
   (base ctx
         [:div
-         (when (bound? #'csrf/*anti-forgery-token*)
-           {:hx-headers (cheshire/generate-string
-                          {:x-csrf-token csrf/*anti-forgery-token*}),
-            :hx-boost 1}) body]))
+         (merge
+           (security-headers)
+           {:hx-boost 1,
+            :class
+              "app bg-green text-white font-body bg-[url('/img/noise.svg')]"})
+         [:header (header team-name)] [:main.main body]
+         [:footer {:class ""} footer]]))
 
 (defn on-error
   [{:keys [status ex], :as ctx}]
