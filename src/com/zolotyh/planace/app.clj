@@ -5,7 +5,8 @@
             [com.zolotyh.planace.pocker :refer [poker]]
             [com.zolotyh.planace.settings :as settings]
             [com.zolotyh.planace.ui :as ui]
-            [com.zolotyh.planace.ui.ui :refer [layout main]]
+            [com.zolotyh.planace.ui.ui :refer
+             [card example-user example-vote layout task-list]]
             [ring.adapter.jetty9 :as jetty]
             [rum.core :as rum]
             [xtdb.api :as xt]))
@@ -95,6 +96,45 @@
 (defn echo
   [{:keys [params]}]
   {:status 200, :headers {"content-type" "application/json"}, :body params})
+
+(defn task-header
+  [{title :title, code :code}]
+  [:h2.mb-12 [:span.text-md.text-yellow code] [:br]
+   [:div.text-3xl.text-ellipsis.overflow-hidden.h-9.w-full.whitespace-nowrap
+    {:title title} title]])
+
+(defn main
+  []
+  [:div.mx-auto.px-12.py-8.grid
+   [:div.grid.grid-flow-row.grid-cols-12.gap-4
+    [:div.col-span-8.grid-cols-7.gap-x-8.grid
+     [:div.col-span-5
+      (task-header
+        {:title
+           "Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.",
+         :code "WTE-23455"})]
+     [:div.col-span-2
+      [:h3.text-4xl.text-right
+       [:div.inline-block.align-middle "Result:" [:p.text-lg.text-left "reset"]]
+       [:div.inline-block.relative.ml-2.w-24.h-24.align-middle
+        [:img
+         {:class
+            "align-middle pr-2 w-24 h-24 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
+          :src "/img/chips.svg"}]
+        [:span
+         {:class
+            "font-georgia absolute w-full -mt-2 -ml-1 text-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl"}
+         2]]]]]
+    [:div.grid.grid-flow-row.grid-cols-7.gap-x-8.gap-y-6.col-span-8.content-start
+     "" (card example-user (assoc example-vote :value "pass"))
+     (card example-user (assoc example-vote :value "pass"))
+     (card example-user example-vote) (card example-user example-vote)
+     (card example-user (assoc example-vote :active true))
+     (card example-user (assoc example-vote :active true))
+     (card example-user (assoc example-vote :active true))
+     (card example-user example-vote) (card example-user example-vote)
+     (card (dissoc example-user :avatar-url) example-vote)]
+    [:div {:class "col-span-4 px-12"} (task-list)]]])
 
 (defn render-room
   [{:keys [path-params biff/db]}]
