@@ -35,30 +35,38 @@
                     :icon "/img/glider.png",
                     :description (str settings/app-name " Description"),
                     :image "https://clojure.org/images/clojure-logo-120b.png"})
-      (update :base/head
-              (fn [head]
-                (concat
-                  [[:link {:rel "stylesheet", :href (css-path)}]
-                   [:script {:src (js-path)}]
-                   [:script {:src "https://unpkg.com/htmx.org@2.0.1"}]
-                   [:script {:src "https://unpkg.com/htmx-ext-ws@2.0.0/ws.js"}]
-                   [:script {:src "https://unpkg.com/hyperscript.org@0.9.12"}]
-                   (when recaptcha
-                     [:script
-                      {:src "https://www.google.com/recaptcha/api.js",
-                       :async "async",
-                       :defer "defer"}])]
-                  head))))
+      (update
+        :base/head
+        (fn [head]
+          (concat
+            [[:link {:rel "stylesheet", :href (css-path)}]
+             [:link
+              {:rel "stylesheet",
+               :href
+                 "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"}]
+             [:script {:src (js-path)}]
+             [:script
+              {:src
+                 "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"}]
+             [:script {:src "https://unpkg.com/htmx.org@2.0.1"}]
+             [:script {:src "https://unpkg.com/htmx-ext-ws@2.0.0/ws.js"}]
+             [:script {:src "https://unpkg.com/hyperscript.org@0.9.12"}]
+             (when recaptcha
+               [:script
+                {:src "https://www.google.com/recaptcha/api.js",
+                 :async "async",
+                 :defer "defer"}])]
+            head))))
     body))
 
 (defn page
   [ctx & body]
   (base ctx
-        (when (bound? #'csrf/*anti-forgery-token*)
-          {:hx-headers (cheshire/generate-string {:x-csrf-token
-                                                    csrf/*anti-forgery-token*}),
-           :hx-boost 1})
-        body))
+        [:div
+         (when (bound? #'csrf/*anti-forgery-token*)
+           {:hx-headers (cheshire/generate-string
+                          {:x-csrf-token csrf/*anti-forgery-token*}),
+            :hx-boost 1}) body]))
 
 (defn on-error
   [{:keys [status ex], :as ctx}]
