@@ -5,8 +5,7 @@
             [com.zolotyh.planace.pocker :refer [poker]]
             [com.zolotyh.planace.settings :as settings]
             [com.zolotyh.planace.ui :as ui]
-            [com.zolotyh.planace.ui.app :refer [voter-list]]
-            [com.zolotyh.planace.ui.ui :refer [layout]]
+            [com.zolotyh.planace.ui.ui :refer [layout main]]
             [ring.adapter.jetty9 :as jetty]
             [rum.core :as rum]
             [xtdb.api :as xt]))
@@ -101,11 +100,11 @@
   [{:keys [path-params biff/db]}]
   (let [room (xt/entity db (parse-uuid (:room-id path-params)))
         vote (xt/entity db (:room/active-vote room))]
-    (ui/page {:base/title (str (:token path-params))}
-             (voter-list (vals (:vote/results vote)))
-             [:div "vote: " (:vote/title vote) "active vote id: "
-              (:room/active-vote room)]
-             [:p "room: " (:room/name room)])))
+    (ui/page {:base/title (str (:token path-params))} (main))))
+             ;; (voter-list (vals (:vote/results vote)))
+             ;; [:div "vote: " (:vote/title vote) "active vote id: "
+             ;;  (:room/active-vote room)]
+             ;; [:p "room: " (:room/name room)])))
 
 (def module
   {:static {"/about/" about-page},

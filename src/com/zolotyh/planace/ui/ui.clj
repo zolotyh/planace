@@ -79,7 +79,8 @@
    [:div.mt-1.text-center.p-1.text-ellipsis.overflow-hidden (:first-name user)
     [:br] (:last-name user)]])
 
-(def main
+(defn main
+  []
   [:div.mx-auto.px-12.py-8.grid
    [:div.grid.grid-flow-row.grid-cols-12.gap-4
     [:div.col-span-8.grid-cols-7.gap-x-8.grid
@@ -137,7 +138,7 @@
 (defn layout
   []
   [:div {:class "app bg-green text-white font-body bg-[url('/img/noise.svg')]"}
-   [:header {:class "header"} (header team-name)] [:main {:class "main"} main]
+   [:header {:class "header"} (header team-name)] [:main {:class "main"} (main)]
    [:footer {:class "footer bg-darkgreen bg-[url('/img/noise.svg')] z-10"}
     footer]])
 
