@@ -5,7 +5,6 @@
   [{first-name :first-name, last-name :last-name}]
   (str/upper-case (str (first first-name) (first last-name))))
 
-
 (defn voted
   [{:keys [first-name last-name vote]}]
   [:div.px-3.py-2 first-name last-name vote])
@@ -21,7 +20,7 @@
      [:img {:src (:avatar-url user), :alt (get-abbr user)}]]
     [:div
      {:class
-        "text-xl font-georgia rounded-full text-black h-12 w-12 flex justify-center items-center"}
+      "text-xl font-georgia rounded-full text-black h-12 w-12 flex justify-center items-center"}
      (get-abbr user)]))
 
 ;; (defn voter [{:keys [voted?], :as ctx}] (if voted? (voted ctx) (not-voted
@@ -31,15 +30,15 @@
   [:div {:title (str first-name " " last-name)}
    [:div
     {:class
-       "rounded-xl bg-white aspect-[98/136] shadow-xl flex justify-center relative items-center"}
+     "rounded-xl bg-white aspect-[98/136] shadow-xl flex justify-center relative items-center"}
     (avatar ctx)
     [:div
      {:class
-        "text-black font-thin text-xl font-bold font-georgia absolute top-1 left-2"}
+      "text-black font-thin text-xl font-bold font-georgia absolute top-1 left-2"}
      (:value vote)]
     [:div
      {:class
-        "text-black font-thin text-xl font-bold font-georgia absolute bottom-1 right-2 transform rotate-180"}
+      "text-black font-thin text-xl font-bold font-georgia absolute bottom-1 right-2 transform rotate-180"}
      (:value vote)]]
    [:div.mt-1.text-center.p-1.text-ellipsis.overflow-hidden first-name [:br]
     last-name]])

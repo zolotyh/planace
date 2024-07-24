@@ -7,7 +7,6 @@
             [com.zolotyh.planace.ui.mocks :as mocks]
             [ring.middleware.anti-forgery :as csrf]))
 
-
 (def domain "scrumcasino.io")
 (def home-link (str "https://" domain))
 (def team-name "WTE team")
@@ -28,16 +27,16 @@
   (if active
     [:div
      {:class
-        "text-white bg-red text-2xl font-georgia flex justify-center items-center aspect-[98/136] -mt-[10%] rounded-xl"}
+      "text-white bg-red text-2xl font-georgia flex justify-center items-center aspect-[98/136] -mt-[10%] rounded-xl"}
      [:div title]]
     [:div
      {:class
-        "bg-white cursor-pointer text-black text-2xl font-georgia flex justify-center items-center aspect-[98/136] -mt-[0%] rounded-xl"}
+      "bg-white cursor-pointer text-black text-2xl font-georgia flex justify-center items-center aspect-[98/136] -mt-[0%] rounded-xl"}
      [:div title]]))
 
 (def example-user
   {:avatar-url
-     "https://sun9-73.userapi.com/impg/gM-PcbLDL3SATO8cWYwk6VJRAEH-Fwt98o-zRg/PpC3EJYSl5I.jpg?size=791x933&quality=95&sign=c6d4afd3b062eb11005cca0fb03abfd9&type=album",
+   "https://sun9-73.userapi.com/impg/gM-PcbLDL3SATO8cWYwk6VJRAEH-Fwt98o-zRg/PpC3EJYSl5I.jpg?size=791x933&quality=95&sign=c6d4afd3b062eb11005cca0fb03abfd9&type=album",
    :first-name "alekseifdfsdfsdfsdfdsfsdfdsfsdf",
    :last-name "Zolotykhsdfsdfsdsdfsdfsdfsdfsdf"})
 
@@ -58,7 +57,7 @@
      [:img {:src (:avatar-url user), :alt (get-abbr user)}]]
     [:div
      {:class
-        "text-xl font-georgia rounded-full text-black h-12 w-12 flex justify-center items-center"}
+      "text-xl font-georgia rounded-full text-black h-12 w-12 flex justify-center items-center"}
      (get-abbr user)]))
 
 (defn card
@@ -66,15 +65,15 @@
   [:div {:title (str (:first-name user) " " (:last-name user))}
    [:div
     {:class
-       "rounded-xl bg-white aspect-[98/136] shadow-xl flex justify-center relative items-center"}
+     "rounded-xl bg-white aspect-[98/136] shadow-xl flex justify-center relative items-center"}
     (avatar user)
     [:div
      {:class
-        "text-black font-thin text-xl font-bold font-georgia absolute top-1 left-2"}
+      "text-black font-thin text-xl font-bold font-georgia absolute top-1 left-2"}
      (:value vote)]
     [:div
      {:class
-        "text-black font-thin text-xl font-bold font-georgia absolute bottom-1 right-2 transform rotate-180"}
+      "text-black font-thin text-xl font-bold font-georgia absolute bottom-1 right-2 transform rotate-180"}
      (:value vote)]]
    [:div.mt-1.text-center.p-1.text-ellipsis.overflow-hidden (:first-name user)
     [:br] (:last-name user)]])
@@ -85,20 +84,20 @@
     [:div.col-span-8.grid-cols-7.gap-x-8.grid
      [:div.col-span-5
       (task-header
-        {:title
-           "Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.",
-         :code "WTE-23455"})]
+       {:title
+        "Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.",
+        :code "WTE-23455"})]
      [:div.col-span-2
       [:h3.text-4xl.text-right
        [:div.inline-block.align-middle "Result:" [:p.text-lg.text-left "reset"]]
        [:div.inline-block.relative.ml-2.w-24.h-24.align-middle
         [:img
          {:class
-            "align-middle pr-2 w-24 h-24 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
+          "align-middle pr-2 w-24 h-24 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
           :src "/img/chips.svg"}]
         [:span
          {:class
-            "font-georgia absolute w-full -mt-2 -ml-1 text-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl"}
+          "font-georgia absolute w-full -mt-2 -ml-1 text-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl"}
          2]]]]]
     [:div.grid.grid-flow-row.grid-cols-7.gap-x-8.gap-y-6.col-span-8.content-start
      (card example-user (assoc example-vote :value "pass"))

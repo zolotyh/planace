@@ -29,44 +29,44 @@
 (defn base
   [{:keys [::recaptcha], :as ctx} & body]
   (apply biff/base-html
-    (->
-      ctx
-      (merge #:base{:title settings/app-name,
-                    :lang "en-US",
-                    :icon "/img/glider.png",
-                    :description (str settings/app-name " Description"),
-                    :image "https://clojure.org/images/clojure-logo-120b.png"})
-      (update :base/head
-              (fn [head]
-                (concat
-                  [[:link {:rel "stylesheet", :href (css-path)}]
-                   [:script {:src (js-path)}]
-                   [:script {:src "https://unpkg.com/htmx.org@2.0.1"}]
-                   [:script {:src "https://unpkg.com/htmx-ext-ws@2.0.0/ws.js"}]
-                   [:script {:src "https://unpkg.com/hyperscript.org@0.9.12"}]
-                   (when recaptcha
-                     [:script
-                      {:src "https://www.google.com/recaptcha/api.js",
-                       :async "async",
-                       :defer "defer"}])]
-                  head))))
-    body))
+         (->
+          ctx
+          (merge #:base{:title settings/app-name,
+                        :lang "en-US",
+                        :icon "/img/glider.png",
+                        :description (str settings/app-name " Description"),
+                        :image "https://clojure.org/images/clojure-logo-120b.png"})
+          (update :base/head
+                  (fn [head]
+                    (concat
+                     [[:link {:rel "stylesheet", :href (css-path)}]
+                      [:script {:src (js-path)}]
+                      [:script {:src "https://unpkg.com/htmx.org@2.0.1"}]
+                      [:script {:src "https://unpkg.com/htmx-ext-ws@2.0.0/ws.js"}]
+                      [:script {:src "https://unpkg.com/hyperscript.org@0.9.12"}]
+                      (when recaptcha
+                        [:script
+                         {:src "https://www.google.com/recaptcha/api.js",
+                          :async "async",
+                          :defer "defer"}])]
+                     head))))
+         body))
 
 (defn security-headers
   []
   (when (bound? #'csrf/*anti-forgery-token*)
     {:hx-headers (cheshire/generate-string {:x-csrf-token
-                                              csrf/*anti-forgery-token*})}))
+                                            csrf/*anti-forgery-token*})}))
 
 (defn page
   [ctx & body]
   (base ctx
         [:div
          (merge
-           (security-headers)
-           {:hx-boost 1,
-            :class
-              "app bg-green text-white font-body bg-[url('/img/noise.svg')]"})
+          (security-headers)
+          {:hx-boost 1,
+           :class
+           "app bg-green text-white font-body bg-[url('/img/noise.svg')]"})
          [:header (header team-name)] [:main.main body]
          [:footer {:class ""} footer]]))
 
