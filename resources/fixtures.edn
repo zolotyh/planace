@@ -2,8 +2,8 @@
 [{:db/doc-type :user,
   :user/email "spam@zolotyh.com",
   :user/first-name "Алексей",
-  :user/joined-at :db/now,
   :user/last-name "Золотых",
+  :user/joined-at :db/now,
   :xt/id #uuid "540c203e-a340-43b9-9d78-c7880e17cc4a"}
  {:db/doc-type :user,
   :user/email "spam2@zolotyh.com",
@@ -20,11 +20,11 @@
  {:db/doc-type :vote,
   :vote/owner #uuid "540c203e-a340-43b9-9d78-c7880e17cc4a",
   :vote/results {#uuid "44c0600b-3d2f-412e-8645-26b84a82e6ae"
-                   {:first-name "Петр", :last-name "Петров", :vote 3},
+                 {:first-name "Петр", :last-name "Петров", :vote 3},
                  #uuid "45ce199c-c30a-4ea3-b1c3-d54252c5c2ca"
-                   {:first-name "Иван", :last-name "Иванов", :vote 2},
+                 {:first-name "Иван", :last-name "Иванов", :vote 2},
                  #uuid "540c203e-a340-43b9-9d78-c7880e17cc4a"
-                   {:first-name "Алексей", :last-name "Золотых", :vote 1}},
+                 {:first-name "Алексей", :last-name "Золотых", :vote 1}},
   :vote/room #uuid "8ce18a78-0146-41ac-8725-a0ae457741fd",
   :vote/title "Vote 1",
   :vote/type :fib,

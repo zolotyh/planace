@@ -1,5 +1,4 @@
 (ns com.zolotyh.planace-test
-  ;; If you add more test files, require them here so that they'll get loaded by com.zolotyh.planace/on-save
   (:require [cheshire.core :as cheshire]
             [clojure.string :as str]
             [clojure.test :refer [deftest is]]

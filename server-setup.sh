@@ -5,7 +5,12 @@ set -e
 BIFF_PROFILE=${1:-prod}
 CLJ_VERSION=1.11.1.1165
 TRENCH_VERSION=0.4.0
-TRENCH_FILE=trenchman_${TRENCH_VERSION}_linux_amd64.tar.gz
+if [ $(uname -m) = "aarch64" ]; then
+  ARCH=arm64
+else
+  ARCH=amd64
+fi
+TRENCH_FILE=trenchman_${TRENCH_VERSION}_linux_${ARCH}.tar.gz
 
 echo waiting for apt to finish
 while (ps aux | grep [a]pt); do
@@ -18,11 +23,7 @@ apt-get upgrade
 apt-get -y install default-jre rlwrap ufw git snapd
 bash < <(curl -s https://download.clojure.org/install/linux-install-$CLJ_VERSION.sh)
 bash < <(curl -s https://raw.githubusercontent.com/babashka/babashka/master/install)
-wget https://github.com/athos/trenchman/releases/download/v$TRENCH_VERSION/$TRENCH_FILE
-mkdir .trench_tmp
-tar -xf $TRENCH_FILE --directory .trench_tmp
-mv .trench_tmp/trench /usr/local/bin/
-rm -rf $TRENCH_FILE .trench_tmp
+curl -sSLf https://github.com/athos/trenchman/releases/download/v$TRENCH_VERSION/$TRENCH_FILE | tar zxvfC - /usr/local/bin trench
 
 # Non-root user
 useradd -m app
