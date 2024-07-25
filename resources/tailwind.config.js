@@ -1,12 +1,46 @@
 module.exports = {
-  content: [
-    './src/**/*',
-    './resources/**/*',
-  ],
+  mode: "jit",
+  content: ["./resources/**/*.html", "./resources/**/*.js", "./src/**/*"],
   theme: {
-    extend: {},
+    fontFamily: {
+      body: [
+        "open_sanscondensed_light",
+        "ui-sans-serif",
+        "system-ui",
+        "-apple-system",
+        "BlinkMacSystemFont",
+        "Segoe UI",
+        "Roboto",
+        "Helvetica Neue",
+        "Arial",
+        "Noto Sans",
+        "sans-serif",
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji",
+      ],
+      georgia: ["Georgia", "Times", "Times New Roman", "serif"],
+    },
+    colors: {
+      green: "#035E4C",
+      darkgreen: "#103128",
+      red: "#B6433C",
+      yellow: "#EEE758",
+      white: "#ffffff",
+      gray: "#F5F5F5",
+      black: "#2C363F",
+    },
+    extend: {
+      aspectRatio: {
+        card: "98 / 136",
+      },
+      gridTemplateColumns: {
+        // 24 column grid
+        18: "repeat(18, minmax(0, 1fr))",
+      },
+    },
   },
-  plugins: [
-    require('@tailwindcss/forms'),
-  ],
-}
+  variants: {},
+  plugins: [require("@tailwindcss/forms")],
+};
