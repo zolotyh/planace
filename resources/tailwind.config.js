@@ -1,3 +1,5 @@
+const colors = require('tailwindcss/colors')
+
 module.exports = {
   mode: "jit",
   content: ["./resources/**/*.html", "./resources/**/*.js", "./src/**/*"],
@@ -23,13 +25,17 @@ module.exports = {
       georgia: ["Georgia", "Times", "Times New Roman", "serif"],
     },
     colors: {
-      green: "#035E4C",
+      green: {
+        DEFAULT: "#035E4C",
+        900: "#103128"
+      },
       darkgreen: "#103128",
       red: "#B6433C",
       yellow: "#EEE758",
       white: "#ffffff",
       gray: "#F5F5F5",
       black: "#2C363F",
+      slate: colors.slate,
     },
     extend: {
       aspectRatio: {
