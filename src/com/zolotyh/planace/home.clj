@@ -23,7 +23,7 @@
      [:.h-3]
      [:.mb-4
       [:label.block.text-gray-700.text-sm.font-bold.mb-2 {:for "#email"} "Email:"]
-      [:input#email.w-80 {:name "email" :type "email" :autocomplete "email" :placeholder "my@example.com"}]]
+      [:input#email.w-80.text-slate-900 {:name "email" :type "email" :autocomplete "email" :placeholder "my@example.com"}]]
      [:.mb-4
       [:label.block.text-gray-700.text-sm.font-bold.mb-2 {:for "#first-name"} "First name:"]
       [:input#email.w-80.text-slate-900 {:name "first-name" :type "text"  :placeholder "John"}]]
