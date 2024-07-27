@@ -77,6 +77,9 @@
      :class "app bg-green text-white font-body bg-[url('/img/noise.svg')]"}
     contents]])
 
+(defn panel [content]
+  [:.bg-green-900.px-5.py-3 content])
+
 (defn base [{:keys [::recaptcha] :as ctx} & body]
   (apply
    base-html
