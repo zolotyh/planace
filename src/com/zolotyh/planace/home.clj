@@ -120,7 +120,7 @@
            "not-signed-in" "You must be signed in to view that page."
            "There was an error.")]])
      [:.h-1]
-     [:.text-sm "Don't have an account yet? " [:a.link {:href "/"} "Sign up"] "."]
+     [:.text-sm "Don't have an account yet? " [:a.link {:href "/sign-up"} "Sign up"] "."]
      [:.h-3]
      biff/recaptcha-disclosure
      email-disabled-notice)]))
