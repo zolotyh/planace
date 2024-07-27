@@ -5,6 +5,7 @@
             [com.zolotyh.planace.home :as home]
             [com.zolotyh.planace.middleware :as mid]
             [com.zolotyh.planace.ui :as ui]
+            [com.zolotyh.planace.auth :as custom-auth]
             [com.zolotyh.planace.worker :as worker]
             [com.zolotyh.planace.schema :as schema]
             [clojure.test :as test]
@@ -19,6 +20,7 @@
   [app/module
    (biff/authentication-module {})
    home/module
+   custom-auth/module
    schema/module
    worker/module])
 
