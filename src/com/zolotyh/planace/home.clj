@@ -42,11 +42,12 @@
            "send-failed" (str "We weren't able to send an email to that address. "
                               "If the problem persists, try another address.")
            "There was an error.")]])
-     [:.h-1]
+     [:.h-1])
+    [:.bg-white.shadow-md.rounded.px-8.pt-6.pb-8.mb-4.text-slate-900
      [:.text-sm "Already have an account? " [:a.link {:href "/"} "Sign in"] "."]
      [:.h-3]
      biff/recaptcha-disclosure
-     email-disabled-notice))))
+     email-disabled-notice])))
 
 (defn link-sent [{:keys [params] :as ctx}]
   (ui/page
