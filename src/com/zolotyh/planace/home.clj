@@ -24,12 +24,6 @@
      [:.mb-4
       [:label.block.text-gray-700.text-sm.font-bold.mb-2 {:for "#email"} "Email:"]
       [:input#email.w-80.text-slate-900 {:name "email" :type "email" :autocomplete "email" :placeholder "my@example.com"}]]
-     [:.mb-4
-      [:label.block.text-gray-700.text-sm.font-bold.mb-2 {:for "#first-name"} "First name:"]
-      [:input#email.w-80.text-slate-900 {:name "first-name" :type "text"  :placeholder "John"}]]
-     [:.mb-4
-      [:label.block.text-gray-700.text-sm.font-bold.mb-2 {:for "#last-name"} "Last name:"]
-      [:input#email.w-80.text-slate-900 {:name "last-name" :type "text"  :placeholder "Smith"}]]
      [:mb-4
       [:button.btn.g-recaptcha
        (merge (when site-key
@@ -49,7 +43,7 @@
                               "If the problem persists, try another address.")
            "There was an error.")]])
      [:.h-1]
-     [:.text-sm "Already have an account? " [:a.link {:href "/signin"} "Sign in"] "."]
+     [:.text-sm "Already have an account? " [:a.link {:href "/"} "Sign in"] "."]
      [:.h-3]
      biff/recaptcha-disclosure
      email-disabled-notice))))
@@ -88,8 +82,7 @@
 (defn signin-page [{:keys [recaptcha/site-key params] :as ctx}]
   (ui/page
    (assoc ctx ::ui/recaptcha true)
-   [:.bg-white.shadow-md.rounded.px-8.pt-6.pb-8.mb-4.text-slate-900
-
+   (panel
     (biff/form
      {:action "/auth/send-code"
       :id "signin"
@@ -123,7 +116,7 @@
      [:.text-sm "Don't have an account yet? " [:a.link {:href "/sign-up"} "Sign up"] "."]
      [:.h-3]
      biff/recaptcha-disclosure
-     email-disabled-notice)]))
+     email-disabled-notice))))
 
 (defn enter-code-page [{:keys [recaptcha/site-key params] :as ctx}]
   (ui/page
