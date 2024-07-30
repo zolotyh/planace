@@ -1,6 +1,7 @@
 (ns com.zolotyh.planace.ui
   (:require
    [cheshire.core :as cheshire]
+   [clojure.string :as str]
    [clojure.java.io :as io]
    [com.biffweb :as biff]
    [com.biffweb.impl.rum :refer [g-fonts]]
@@ -17,13 +18,14 @@
     (str "/css/main.css?t=" last-modified)
     "/css/main.css"))
 
-(defn js-path []
-  (if-some [last-modified (some-> (io/resource "public/js/main.js")
-                                  ring-response/resource-data
-                                  :last-modified
-                                  (.getTime))]
-    (str "/js/main.js?t=" last-modified)
-    "/js/main.js"))
+(defn js-path [path]
+  (let [public-path (str/replace-first path "public" "")]
+    (if-some [last-modified (some-> (io/resource path)
+                                    ring-response/resource-data
+                                    :last-modified
+                                    (.getTime))]
+      (str public-path "?t=" last-modified)
+      public-path)))
 
 (defn base-html
   [{:base/keys [title
@@ -91,10 +93,9 @@
                      :image "https://clojure.org/images/clojure-logo-120b.png"})
        (update :base/head (fn [head]
                             (concat [[:link {:rel "stylesheet" :href (css-path)}]
-                                     [:script {:src (js-path)}]
-                                     [:script {:src "https://unpkg.com/htmx.org@1.9.12"}]
-                                     [:script {:src "https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js"}]
-                                     [:script {:src "https://unpkg.com/hyperscript.org@0.9.8"}]
+                                     [:script {:src (js-path "public/js/main.js")}]
+                                     [:script {:src (js-path "public/js/htmx.min.js")}]
+                                     [:script {:src (js-path "public/js/ws.js")}]
                                      (when recaptcha
                                        [:script {:src "https://www.google.com/recaptcha/api.js"
                                                  :async "async" :defer "defer"}])]
