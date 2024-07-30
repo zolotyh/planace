@@ -6,6 +6,7 @@
             [com.zolotyh.planace.middleware :as mid]
             [com.zolotyh.planace.ui :as ui]
             [com.zolotyh.planace.auth :as custom-auth]
+            [com.zolotyh.planace.room :as room]
             [com.zolotyh.planace.worker :as worker]
             [com.zolotyh.planace.schema :as schema]
             [clojure.test :as test]
@@ -19,6 +20,7 @@
 (def modules
   [app/module
    (biff/authentication-module {})
+   room/module
    home/module
    custom-auth/module
    schema/module
@@ -58,7 +60,8 @@
    :biff.beholder/on-save #'on-save
    :biff.middleware/on-error #'ui/on-error
    :biff.xtdb/tx-fns biff/tx-fns
-   :com.zolotyh.planace/chat-clients (atom #{})})
+   :com.zolotyh.planace/chat-clients (atom #{})
+   :com.zolotyh.planace/votes (atom {})})
 
 (defonce system (atom {}))
 
