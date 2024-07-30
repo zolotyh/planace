@@ -3,27 +3,25 @@
    [cheshire.core :as cheshire]
    [com.biffweb :refer [now]]
    [com.zolotyh.planace.ui :as ui]
+   [com.zolotyh.planace.utils.sequences :refer [sequences]]
    [ring.adapter.jetty9 :as jetty]
    [rum.core :as rum]))
 
 (def vote-result-id "vote-result")
 
-(defn value [v]
-  (cheshire/encode {:value value}))
-
-(defn vote-button [value]
+(defn vote-button [[key value]]
   [:button.px-5.py-3 {:hx-post "/room/1"
                       :hx-vals (cheshire/encode {:value value})
                       :hx-trigger "click"
                       :hx-target (str "#" vote-result-id)}
-   "vote"])
+   key])
 
 (defn vote-list []
   [:div {:id vote-result-id} "vote-list"])
 
 (defn vote-panel []
   [:div
-   (->>  (range 1 11)
+   (->>  (:fib sequences)
          (map vote-button))])
 
 (defn- render-vote [{:keys [params body] :as ctx}]
