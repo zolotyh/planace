@@ -23,6 +23,7 @@
    :vote/id :uuid
    :vote [:map {:closed false}
           [:xt/id       :vote/id]
+          [:vote/open?  :boolean]
           [:vote/owner    :user/id]
           [:vote/results [:map-of :user/id [:map {:closed true}
                                             [:vote int?]

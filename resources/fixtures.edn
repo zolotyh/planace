@@ -27,6 +27,7 @@
                  {:first-name "Алексей", :last-name "Золотых", :vote 1}},
   :vote/room #uuid "8ce18a78-0146-41ac-8725-a0ae457741fd",
   :vote/title "Vote 1",
+  :vote/open? true
   :vote/type :fib,
   :vote/updated-at :db/now,
   :xt/id #uuid "21fa7012-3abe-4c1a-8ad6-bdd2e83515f0"}
