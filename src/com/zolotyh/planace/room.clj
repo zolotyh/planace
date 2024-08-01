@@ -31,7 +31,7 @@
    [:tr [:th "Фамилия"] [:td (:last-name result)]]
    [:tr [:th "Значение"] [:td (:vote result)]]])
 
-(defn closed-card [result] [:div "Закрыто"])
+(defn closed-card [_] [:div "Закрыто"])
 
 (defn results [vote] (map card (vals (:vote/results vote))))
 (defn closed-results [vote] (map closed-card (vals (:vote/results vote))))
