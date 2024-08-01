@@ -5,9 +5,8 @@
             [rum.core :as rum]
             [xtdb.api :as xt]))
 
-
 (defn ws-vote-handler
-  [{:keys [com.zolotyh.planace/votes path-params session]}]
+  [{:keys [com.zolotyh.planace/votes path-params]}]
   (let [room-id (:room-id path-params)]
     {:status 101,
      :headers {"upgrade" "websocket", "connection" "upgrade"},
@@ -35,7 +34,8 @@
 
 (defn render-room
   [{:keys [room vote], :as ctx}]
-  [:div {:id "room"} (:room/name room) (render-vote vote)])
+  [:div {:id "room", :hx-ext "ws", :ws-connect (str "/room/ws/" (:xt/id room))}
+   (:room/name room) (render-vote vote)])
 
 (defn room
   [{:keys [path-params biff/db], :as ctx}]
@@ -48,9 +48,9 @@
   (doseq [[op & args] (::xt/tx-ops tx)
           :when (= op ::xt/put)
           :let [[vote] args]
-          :when (contains? vote :vote/title)
+          ;; :when (contains? vote :vote/title)
           :let [html (rum/render-static-markup (render-vote vote))]
-          ws (get-in @votes [(:vote/room vote)])]
+          ws (get-in @votes [(str (:vote/room vote))])]
     (jetty/send! ws html)))
 
 
