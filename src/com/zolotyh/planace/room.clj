@@ -1,9 +1,13 @@
 (ns com.zolotyh.planace.room
   (:require [com.biffweb :as biff]
             [com.zolotyh.planace.ui :as ui]
+            [com.zolotyh.planace.utils.sequences :refer [get-vote-result]]
             [ring.adapter.jetty9 :as jetty]
             [rum.core :as rum]
             [xtdb.api :as xt]))
+
+(defn get-results [result] (reduce (fn [a v] (conj a (:vote v))) [] result))
+
 
 (defn ws-vote-handler
   [{:keys [com.zolotyh.planace/votes path-params]}]
@@ -15,14 +19,35 @@
 
 (defn toggle-vote-button
   [vote]
-  [:button
+  [:button.bg-slate-900.text-slate-200.px-5.py-2.mx-2.rounded
    {:hx-trigger "click",
     :hx-target (str "#vote"),
-    :hx-post (str "/room/vote/" (:xt/id vote) "/toggle")} "toggle"])
+    :hx-post (str "/room/vote/" (:xt/id vote) "/toggle")}
+   (if (:vote/open? vote) "Закрыть" "Открыть")])
+
+(defn card
+  [result]
+  [:table [:tr [:th "Имя"] [:td (:first-name result)]]
+   [:tr [:th "Фамилия"] [:td (:last-name result)]]
+   [:tr [:th "Значение"] [:td (:vote result)]]])
+
+(defn closed-card [result] [:div "Закрыто"])
+
+(defn results [vote] (map card (vals (:vote/results vote))))
+(defn closed-results [vote] (map closed-card (vals (:vote/results vote))))
 
 (defn render-vote
   [vote]
-  [:div {:id "vote"} (:vote/open? vote) (toggle-vote-button vote)])
+  [:div {:id "vote"}
+   (if (:vote/open? vote)
+     [:<>
+      [:div.text-3xl "Итоговый результат: "
+       (:key (get-vote-result (get-results (vals (:vote/results vote)))
+                              :median
+                              :natural))] (results vote)]
+     (closed-results vote)) (toggle-vote-button vote)])
+
+
 
 
 (defn toggle-vote
@@ -33,7 +58,7 @@
     (render-vote new-vote)))
 
 (defn render-room
-  [{:keys [room vote], :as ctx}]
+  [{:keys [room vote]}]
   [:div {:id "room", :hx-ext "ws", :ws-connect (str "/room/ws/" (:xt/id room))}
    (:room/name room) (render-vote vote)])
 
