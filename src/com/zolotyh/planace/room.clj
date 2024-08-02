@@ -1,14 +1,21 @@
 (ns com.zolotyh.planace.room
-  (:require [com.biffweb :as biff]
-            [com.zolotyh.planace.ui :as ui]
-            [com.zolotyh.planace.utils.sequences :refer
-             [get-vote-result sequences]]
-            [ring.adapter.jetty9 :as jetty]
-            [rum.core :as rum]
-            [xtdb.api :as xt]
-            [cheshire.core :as cheshire]))
+  (:require
+   [cheshire.core :as cheshire]
+   [com.biffweb :as biff]
+   [com.zolotyh.planace.ui :as ui]
+   [com.zolotyh.planace.utils.sequences :refer
+    [get-vote-result sequences]]
+   [ring.adapter.jetty9 :as jetty]
+   [rum.core :as rum]
+   [xtdb.api :as xt]))
 
 (defn get-results [result] (reduce (fn [a v] (conj a (:vote v))) [] result))
+
+(defn vote-switcher-item [item]
+  [:button {:hx-post (str "/room/" (:vote/room item)) :hx-trigger "click"} (str item)])
+
+(defn vote-switcher [vote-list]
+  [:div (map vote-switcher-item vote-list)])
 
 (defn ws-vote-handler
   [{:keys [com.zolotyh.planace/votes path-params]}]
@@ -44,7 +51,7 @@
      [:<>
       [:div.text-3xl "Итоговый результат: "
        (:key (get-vote-result (get-results (vals (:vote/results vote)))
-                              :mean
+                              :median
                               :fib))] (results vote)]
      (closed-results vote)) (toggle-vote-button vote)])
 
@@ -67,15 +74,20 @@
     (render-vote new-vote)))
 
 (defn render-room
-  [{:keys [room vote]}]
+  [{:keys [room vote vote-list]}]
   [:div {:id "room", :hx-ext "ws", :ws-connect (str "/room/ws/" (:xt/id room))}
-   (:room/name room) (render-vote vote) (vote-panel vote)])
+   (:room/name room)
+   (render-vote vote)
+   (vote-panel vote)
+   (vote-switcher vote-list)])
 
 (defn room
   [{:keys [path-params biff/db], :as ctx}]
-  (let [room (xt/entity db (parse-uuid (path-params :room-id)))
-        vote (xt/entity db (:room/active-vote room))]
-    (ui/page ctx (render-room {:vote vote, :room room}))))
+  (let [room-uuid (parse-uuid (:room-id path-params))
+        room (xt/entity db room-uuid)
+        vote (xt/entity db (:room/active-vote room))
+        vote-list (biff/lookup-all db :vote/room room-uuid)]
+    (ui/page ctx (render-room {:vote vote, :room room, :vote-list vote-list}))))
 
 (defn notify-room-connections
   [{:keys [com.zolotyh.planace/votes]} tx]
