@@ -1,13 +1,13 @@
 (ns com.zolotyh.planace.room
   (:require [com.biffweb :as biff]
             [com.zolotyh.planace.ui :as ui]
-            [com.zolotyh.planace.utils.sequences :refer [get-vote-result]]
+            [com.zolotyh.planace.utils.sequences :refer
+             [get-vote-result sequences]]
             [ring.adapter.jetty9 :as jetty]
             [rum.core :as rum]
             [xtdb.api :as xt]))
 
 (defn get-results [result] (reduce (fn [a v] (conj a (:vote v))) [] result))
-
 
 (defn ws-vote-handler
   [{:keys [com.zolotyh.planace/votes path-params]}]
@@ -47,8 +47,16 @@
                               :natural))] (results vote)]
      (closed-results vote)) (toggle-vote-button vote)])
 
+(defn voting-item
+  [{:keys [vote/room]} [key value]]
+  [:button.px-5.py-3.mx-2.bg-slate-900
+   {:hx-post (str "/room/" room), :hx-trigger "click"} key])
 
-
+(defn vote-panel
+  [vote]
+  (let [vote-type (:vote/type vote)]
+    [:<> [:h1.size-16 "lorem"] [:div (str "voting type: " (:vote/type vote))]
+     (map (partial voting-item vote) (vote-type sequences))]))
 
 (defn toggle-vote
   [{:keys [biff/db path-params], :as ctx}]
@@ -60,7 +68,7 @@
 (defn render-room
   [{:keys [room vote]}]
   [:div {:id "room", :hx-ext "ws", :ws-connect (str "/room/ws/" (:xt/id room))}
-   (:room/name room) (render-vote vote)])
+   (:room/name room) (render-vote vote) (vote-panel vote)])
 
 (defn room
   [{:keys [path-params biff/db], :as ctx}]
@@ -78,10 +86,15 @@
           ws (get-in @votes [(str (:vote/room vote))])]
     (jetty/send! ws html)))
 
-
+(defn vote
+  [{:keys [biff/db path-params], :as ctx}]
+  (let [vote (xt/entity db (parse-uuid (:vote-id path-params)))]
+    (render-vote vote)))
 
 (def module
-  {:routes
-     ["/room" {:middleware []} ["/vote/:vote-id/toggle" {:post toggle-vote}]
-      ["/view/:room-id" {:get room}] ["/ws/:room-id" {:get ws-vote-handler}]],
+  {:routes ["/room" {:middleware []}
+            ["/vote/:vote-id/toggle" {:post toggle-vote}]
+            ["/vote/:vote-id" {:post vote}]
+            ["/view/:room-id" {:get room}]
+            ["/ws/:room-id" {:get ws-vote-handler}]],
    :on-tx notify-room-connections})
