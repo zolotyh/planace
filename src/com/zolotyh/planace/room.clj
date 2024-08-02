@@ -12,7 +12,10 @@
 (defn get-results [result] (reduce (fn [a v] (conj a (:vote v))) [] result))
 
 (defn vote-switcher-item [item]
-  [:button {:hx-post (str "/room/" (:vote/room item)) :hx-trigger "click"} (str item)])
+  [:button {:hx-post (str "/room/edit/" (:vote/room item))
+            :hx-trigger "click"
+            :hx-target "#room"
+            :hx-vals (cheshire/generate-string {:room/active-vote (:xt/id item)})} (:vote/title item)])
 
 (defn vote-switcher [vote-list]
   [:div (map vote-switcher-item vote-list)])
@@ -74,12 +77,23 @@
     (render-vote new-vote)))
 
 (defn render-room
-  [{:keys [room vote vote-list]}]
+  [{:keys [room vote vote-list ctx]}]
   [:div {:id "room", :hx-ext "ws", :ws-connect (str "/room/ws/" (:xt/id room))}
    (:room/name room)
+   [:div (str "active-vote" (:vote/title vote))]
    (render-vote vote)
    (vote-panel vote)
    (vote-switcher vote-list)])
+
+(defn update-room
+  [{:keys [path-params biff/db params], :as ctx}]
+  (let [room-uuid (parse-uuid (:room-id path-params))
+        room (xt/entity db room-uuid)
+        vote (xt/entity db (:room/active-vote room))
+        vote-list (biff/lookup-all db :vote/room room-uuid)
+        new-room (merge room {:room/active-vote (parse-uuid (get params "room/active-vote"))})]
+    (biff/submit-tx ctx [(merge {:db/op :update, :db/doc-type :room} new-room)])
+    (render-room {:vote vote, :room new-room, :vote-list vote-list :ctx ctx})))
 
 (defn room
   [{:keys [path-params biff/db], :as ctx}]
@@ -87,14 +101,17 @@
         room (xt/entity db room-uuid)
         vote (xt/entity db (:room/active-vote room))
         vote-list (biff/lookup-all db :vote/room room-uuid)]
-    (ui/page ctx (render-room {:vote vote, :room room, :vote-list vote-list}))))
+    (ui/page ctx (render-room {:vote vote, :room room, :vote-list vote-list :ctx ctx}))))
 
 (defn notify-room-connections
   [{:keys [com.zolotyh.planace/votes]} tx]
   (doseq [[op & args] (::xt/tx-ops tx)
           :when (= op ::xt/put)
           :let [[vote] args]
-          :when (contains? vote :vote/title)
+          :when (or
+                 (contains? vote :vote/title)
+                 (contains? vote :room/name))
+
           :let [html (rum/render-static-markup (render-vote vote))]
           ws (get-in @votes [(str (:vote/room vote))])]
     (jetty/send! ws html)))
@@ -114,7 +131,8 @@
 (def module
   {:routes ["/room" {:middleware []}
             ["/vote/:vote-id/toggle" {:post toggle-vote}]
-            ["/vote/:vote-id" {:post vote}]
             ["/view/:room-id" {:get room}]
+            ["/vote/:vote-id" {:post vote}]
+            ["/edit/:room-id" {:post update-room}]
             ["/ws/:room-id" {:get ws-vote-handler}]],
    :on-tx notify-room-connections})
