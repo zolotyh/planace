@@ -18,7 +18,8 @@
            [:map-of :user/id
             [:map {:closed true} [:vote int?]
              [:first-name {:optional true} :string]
-             [:last-name {:optional true} :string]]]] [:vote/room :room/id]
+             [:last-name {:optional true} :string]]]]
+          [:vote/room :room/id]
           [:vote/type [:enum :fib :t-shirts :simple]] [:vote/title :string]
           [:vote/updated-at inst?]],
    :msg/id :uuid,

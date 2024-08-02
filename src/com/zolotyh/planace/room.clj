@@ -5,7 +5,8 @@
              [get-vote-result sequences]]
             [ring.adapter.jetty9 :as jetty]
             [rum.core :as rum]
-            [xtdb.api :as xt]))
+            [xtdb.api :as xt]
+            [cheshire.core :as cheshire]))
 
 (defn get-results [result] (reduce (fn [a v] (conj a (:vote v))) [] result))
 
@@ -43,20 +44,20 @@
      [:<>
       [:div.text-3xl "Итоговый результат: "
        (:key (get-vote-result (get-results (vals (:vote/results vote)))
-                              :median
-                              :natural))] (results vote)]
+                              :mean
+                              :fib))] (results vote)]
      (closed-results vote)) (toggle-vote-button vote)])
 
-(defn voting-item
-  [{:keys [vote/room]} [key value]]
+(defn vote-item
+  [{:keys [vote/room xt/id]} [key value]]
   [:button.px-5.py-3.mx-2.bg-slate-900
-   {:hx-post (str "/room/" room), :hx-trigger "click"} key])
+   {:hx-post (str "/room/vote/" id), :hx-trigger "click" :hx-target "#vote" :hx-vals (cheshire/generate-string {:vote value})} key])
 
 (defn vote-panel
   [vote]
   (let [vote-type (:vote/type vote)]
     [:<> [:h1.size-16 "lorem"] [:div (str "voting type: " (:vote/type vote))]
-     (map (partial voting-item vote) (vote-type sequences))]))
+     (map (partial vote-item vote) (vote-type sequences))]))
 
 (defn toggle-vote
   [{:keys [biff/db path-params], :as ctx}]
@@ -81,15 +82,22 @@
   (doseq [[op & args] (::xt/tx-ops tx)
           :when (= op ::xt/put)
           :let [[vote] args]
-          ;; :when (contains? vote :vote/title)
+          :when (contains? vote :vote/title)
           :let [html (rum/render-static-markup (render-vote vote))]
           ws (get-in @votes [(str (:vote/room vote))])]
     (jetty/send! ws html)))
 
 (defn vote
-  [{:keys [biff/db path-params], :as ctx}]
-  (let [vote (xt/entity db (parse-uuid (:vote-id path-params)))]
-    (render-vote vote)))
+  [{:keys [biff/db path-params session params], :as ctx}]
+  (let [vote (xt/entity db (parse-uuid (:vote-id path-params)))
+        uuid (:uid session)
+        user (xt/entity db (:uid session))
+        new-vote (assoc-in vote [:vote/results uuid]
+                           {:vote (parse-long (params :vote))
+                            :first-name (:user/first-name user)
+                            :last-name (:user/last-name user)})]
+    (biff/submit-tx ctx [(merge {:db/op :update, :db/doc-type :vote} new-vote)])
+    (render-vote new-vote)))
 
 (def module
   {:routes ["/room" {:middleware []}
