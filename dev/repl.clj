@@ -1,8 +1,8 @@
 (ns repl
-  (:require [com.zolotyh.planace :as main]
+  (:require [clojure.edn :as edn]
+            [clojure.java.io :as io]
             [com.biffweb :as biff :refer [q]]
-            [clojure.edn :as edn]
-            [clojure.java.io :as io]))
+            [com.zolotyh.planace :as main]))
 
 ;; REPL-driven development
 ;; ----------------------------------------------------------------------------------------
@@ -67,6 +67,10 @@
   ;; restarting your app, and calling add-fixtures again.
   (add-fixtures)
   ;; Query the database
+  ;; 
+  (let [{:keys [biff/db], :as ctx} (get-context)]
+    (q db '{:find (pull vote [*]), :in [[v ...]] :where [[vote :xt/id v]]} [#uuid "540c203e-a340-43b9-9d78-c7880e17cc4a"]))
+
   (let [{:keys [biff/db], :as ctx} (get-context)]
     (q db '{:find (pull user [*]), :where [[user :user/email]]}))
   ;; Update an existing user's email address
