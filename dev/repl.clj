@@ -69,7 +69,7 @@
   ;; Query the database
   ;; 
   (let [{:keys [biff/db], :as ctx} (get-context)]
-    (q db '{:find (pull vote [*]), :in [[v ...]] :where [[vote :xt/id v]]} [#uuid "540c203e-a340-43b9-9d78-c7880e17cc4a"]))
+    (q db '{:find (pull vote [*]), :in [[v ...]] :where [[vote :xt/id v]]} [#uuid "540c203e-a340-43b9-9d78-c7880e17cc4a" #uuid "45ce199c-c30a-4ea3-b1c3-d54252c5c2ca"]))
 
   (let [{:keys [biff/db], :as ctx} (get-context)]
     (q db '{:find (pull user [*]), :where [[user :user/email]]}))
