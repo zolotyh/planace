@@ -31,6 +31,7 @@ module.exports = {
       },
       darkgreen: "#103128",
       red: "#B6433C",
+      originalRed: colors.red,
       yellow: "#EEE758",
       white: "#ffffff",
       gray: "#F5F5F5",

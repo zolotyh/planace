@@ -9,16 +9,37 @@
    [rum.core :as rum]
    [xtdb.api :as xt]))
 
+
+(defn create-vote-form [{:keys [path-params biff/db]}]
+  (let [room (xt/entity db (parse-uuid (:room-id path-params)))]
+    [:h1.text-xl "New vote form"]
+    [:div (str "test")]
+    (biff/form
+     {:hx-post (str "/room/edit/" (:xt/id room) "/vote") :hx-target "#vote" :hx-swap "outerHTML"}
+
+     [:label.block {:for "vote-name"} "Vote name"]
+     [:.h-1]
+     [:.flex [:input.text-slate-900.w-full#vote {:type "text", :name "vote", :value ""}]
+      [:.w-3] [:button.btn {:type "submit"} "Update"]]
+     [:.h-1]
+     [:.text-sm.text-gray-600 "This demonstrates updating a value with HTMX."])))
+
 (defn get-results [result] (reduce (fn [a v] (conj a (:vote v))) [] result))
 
-(defn vote-switcher-item [item]
-  [:button {:hx-post (str "/room/edit/" (:vote/room item))
+(defn vote-switcher-item [room item]
+  [:button {:class ["px-5" "py-3" "mx-2" "bg-slate-900" "rounded" (when (= (:room/active-vote room)
+                                                                           (:xt/id item))
+                                                                    "!text-originalRed-500")]
+            :hx-post (str "/room/edit/" (:vote/room item))
             :hx-trigger "click"
             :hx-target "#room"
             :hx-vals (cheshire/generate-string {:room/active-vote (:xt/id item)})} (:vote/title item)])
 
-(defn vote-switcher [vote-list]
-  [:div (map vote-switcher-item vote-list)])
+(defn vote-switcher [vote-list room]
+  [:div.py-5
+   [:<>
+    [:h1.text-xl.mb-2 "vote switcher panel"]
+    (map (partial vote-switcher-item room)  vote-list)]])
 
 (defn ws-vote-handler
   [{:keys [com.zolotyh.planace/votes path-params]}]
@@ -83,15 +104,16 @@
    [:div (str "active-vote" (:vote/title vote))]
    (render-vote vote)
    (vote-panel vote)
-   (vote-switcher vote-list)])
+   (vote-switcher vote-list room)
+   (create-vote-form ctx)])
 
 (defn update-room
   [{:keys [path-params biff/db params], :as ctx}]
   (let [room-uuid (parse-uuid (:room-id path-params))
         room (xt/entity db room-uuid)
-        vote (xt/entity db (:room/active-vote room))
-        vote-list (biff/lookup-all db :vote/room room-uuid)
-        new-room (merge room {:room/active-vote (parse-uuid (get params "room/active-vote"))})]
+        new-room (merge room {:room/active-vote (parse-uuid (get params "room/active-vote"))})
+        vote (xt/entity db (:room/active-vote new-room))
+        vote-list (biff/lookup-all db :vote/room room-uuid)]
     (biff/submit-tx ctx [(merge {:db/op :update, :db/doc-type :room} new-room)])
     (render-room {:vote vote, :room new-room, :vote-list vote-list :ctx ctx})))
 
@@ -128,11 +150,18 @@
     (biff/submit-tx ctx [(merge {:db/op :update, :db/doc-type :vote} new-vote)])
     (render-vote new-vote)))
 
+(defn create-vote [{:keys [path-params biff/db session] :as ctx}]
+  (let [room (xt/entity db (parse-uuid (:room-id path-params)))
+        vote (xt/entity db (:room/active-vote room))]
+    (render-vote vote)))
+
+
 (def module
   {:routes ["/room" {:middleware []}
             ["/vote/:vote-id/toggle" {:post toggle-vote}]
             ["/view/:room-id" {:get room}]
             ["/vote/:vote-id" {:post vote}]
             ["/edit/:room-id" {:post update-room}]
+            ["/edit/:room-id/vote" {:post create-vote}]
             ["/ws/:room-id" {:get ws-vote-handler}]],
    :on-tx notify-room-connections})

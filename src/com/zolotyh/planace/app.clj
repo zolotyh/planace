@@ -1,12 +1,12 @@
 (ns com.zolotyh.planace.app
-  (:require [com.biffweb :as biff :refer [q]]
+  (:require [cheshire.core :as cheshire]
+            [com.biffweb :as biff :refer [q]]
             [com.zolotyh.planace.middleware :as mid]
-            [com.zolotyh.planace.ui :as ui]
             [com.zolotyh.planace.settings :as settings]
-            [rum.core :as rum]
-            [xtdb.api :as xt]
+            [com.zolotyh.planace.ui :as ui]
             [ring.adapter.jetty9 :as jetty]
-            [cheshire.core :as cheshire]))
+            [rum.core :as rum]
+            [xtdb.api :as xt]))
 
 (defn set-foo
   [{:keys [session params], :as ctx}]
