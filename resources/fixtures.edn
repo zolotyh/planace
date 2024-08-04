@@ -1,77 +1,65 @@
 ;; Biff transaction. See https://biffweb.com/docs/reference/transactions/
-[{:db/doc-type :user,
-  :user/email "spam@zolotyh.com",
-  :user/first-name "Алексей",
-  :user/joined-at :db/now,
-  :user/last-name "Золотых",
-  :xt/id #uuid "540c203e-a340-43b9-9d78-c7880e17cc4a"}
 
- {:db/doc-type :user,
-  :user/email "spam2@zolotyh.com",
-  :user/first-name "Иван",
-  :user/joined-at :db/now,
-  :user/last-name "Иванов",
-  :xt/id #uuid "45ce199c-c30a-4ea3-b1c3-d54252c5c2ca"}
+[{:db/doc-type :user
+  :xt/id #uuid "90b41082-be77-411b-8a51-a45d825d3f04",
+  :user/email "u1@example.com",
+  :user/last-nane "820Z3Wa7Ko",
+  :user/first-name "8pxYAHWHL5Rtopt0572X4WU3u5J",
+  :user/joined-at #inst "1969-12-31T23:59:00.317-00:00"}
 
- {:db/doc-type :user,
-  :user/email "spam3@zolotyh.com",
-  :user/first-name "Петр",
-  :user/joined-at :db/now,
-  :user/last-name "Петров",
-  :xt/id #uuid "44c0600b-3d2f-412e-8645-26b84a82e6ae"}
-
- {:db/doc-type :vote,
-  :vote/open? true,
-  :vote/owner #uuid "540c203e-a340-43b9-9d78-c7880e17cc4a",
-  :vote/results {#uuid "44c0600b-3d2f-412e-8645-26b84a82e6ae"
-                 {:first-name "Петр", :last-name "Петров", :vote 3},
-                 #uuid "45ce199c-c30a-4ea3-b1c3-d54252c5c2ca"
-                 {:first-name "Иван", :last-name "Иванов", :vote 2},
-                 #uuid "540c203e-a340-43b9-9d78-c7880e17cc4a"
-                 {:first-name "Алексей", :last-name "Золотых", :vote 1}},
-
-  :vote/room #uuid "8ce18a78-0146-41ac-8725-a0ae457741fd",
-  :vote/title "Vote 1",
-  :vote/type :fib,
-  :vote/updated-at :db/now,
-  :xt/id #uuid "21fa7012-3abe-4c1a-8ad6-bdd2e83515f0"}
-
- {:db/doc-type :vote,
-  :vote/open? true,
-  :vote/owner #uuid "540c203e-a340-43b9-9d78-c7880e17cc4a",
-  :vote/results {#uuid "44c0600b-3d2f-412e-8645-26b84a82e6ae"
-                 {:first-name "Петр", :last-name "Петров", :vote 3},
-                 #uuid "45ce199c-c30a-4ea3-b1c3-d54252c5c2ca"
-                 {:first-name "Иван", :last-name "Иванов", :vote 2},
-                 #uuid "540c203e-a340-43b9-9d78-c7880e17cc4a"
-                 {:first-name "Алексей", :last-name "Золотых", :vote 1}},
-  :vote/room #uuid "8ce18a78-0146-41ac-8725-a0ae457741fd",
-  :vote/title "Vote 2",
-  :vote/type :fib,
-  :vote/updated-at :db/now,
-  :xt/id #uuid "cbacbfd3-143d-4cb6-9296-cb5179a863e1"}
-
- {:db/doc-type :room,
-  :xt/id #uuid "8ce18a78-0146-41ac-8725-a0ae457741fd"
-  :room/active-vote #uuid "21fa7012-3abe-4c1a-8ad6-bdd2e83515f0",
-  :room/created-at :db/now,
-  :room/name "Room 1"
-  :room/update-at :db/now,
-  :room/user #uuid "540c203e-a340-43b9-9d78-c7880e17cc4a"
-  :room/users [{:id #uuid "540c203e-a340-43b9-9d78-c7880e17cc4a"
-                :first-name "Алексей",
-                :last-name "Золотых"}
-
-               {:id #uuid "45ce199c-c30a-4ea3-b1c3-d54252c5c2ca"
-                :first-name "Иван",
-                :last-name "Иванов"}
-
-               {:id #uuid "44c0600b-3d2f-412e-8645-26b84a82e6ae"
-                :first-name "Петр",
-                :last-name "Петров"}]}]
+ {:db/doc-type :user
+  :xt/id #uuid "c98e4330-6624-461e-8e45-008a91153a00"
+  :user/email "u2@example.com",
+  :user/last-nane "user 2 last name",
+  :user/first-name "user 2 first name",
+  :user/joined-at #inst "1969-12-31T23:59:00.317-00:00"}
 
 
+ {:db/doc-type :user
+  :xt/id #uuid "f22df1fe-d02d-4a30-8d4a-db0efdf61f47"
+  :user/email "u3@example.com",
+  :user/last-nane "user3 first name",
+  :user/first-name "user3 last name",
+  :user/joined-at #inst "1969-12-31T23:59:00.317-00:00"}
+
+ {:db/doc-type :user
+  :xt/id #uuid "3d1562ca-97ee-4efe-9536-60c294fd3f09"
+  :user/email "u4@example.com",
+  :user/last-nane "user 4 last name",
+  :user/first-name "user 4 first name",
+  :user/joined-at #inst "1969-12-31T23:59:00.317-00:00"}
+
+ {:db/doc-type :room
+  :xt/id #uuid "1930a531-7572-4e67-8569-497228098563"
+  :room/title "room 1",
+  :room/current-vote #uuid "8e1b9d37-7a63-42aa-a41e-af26f7df5802",
+  :room/owner #uuid "90b41082-be77-411b-8a51-a45d825d3f04",
+  :room/members [#uuid "90b41082-be77-411b-8a51-a45d825d3f04"
+                 #uuid "c98e4330-6624-461e-8e45-008a91153a00"
+                 #uuid "3d1562ca-97ee-4efe-9536-60c294fd3f09"
+                 #uuid "f22df1fe-d02d-4a30-8d4a-db0efdf61f47"]}
+ {:db/doc-type :vote
+  :xt/id #uuid "8e1b9d37-7a63-42aa-a41e-af26f7df5802"
+  :vote/room #uuid "1930a531-7572-4e67-8569-497228098563"
+  :vote/open false
+  :vote/title "My super vote2"
+  :vote/result [{:vote 4
+                 :user #uuid "90b41082-be77-411b-8a51-a45d825d3f04"}
+                {:vote 3
+                 :user #uuid "c98e4330-6624-461e-8e45-008a91153a00"}
+                {:vote 2
+                 :user #uuid "3d1562ca-97ee-4efe-9536-60c294fd3f09"}
+                {:vote 1
+                 :user #uuid "f22df1fe-d02d-4a30-8d4a-db0efdf61f47"}]}]
 
 
-
-
+   ; :vote [:map {:closed true}
+   ;        [:xt/id :vote/id]
+   ;        [:vote/room :room/id]
+   ;        [:vote/open :boolean]
+   ;        ; [:vote/type :vote/vote-type]
+   ;        [:vote/votes [:vector
+   ;                      [:map {:closed true}
+   ;                       [:vote :int]
+   ;                       [:user :user/id]]]]
+   ;        [:vote/title :string]]}]

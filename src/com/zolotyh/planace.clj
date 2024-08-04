@@ -1,28 +1,27 @@
 (ns com.zolotyh.planace
-  (:require [com.biffweb :as biff]
-            [com.zolotyh.planace.email :as email]
-            [com.zolotyh.planace.app :as app]
-            [com.zolotyh.planace.home :as home]
-            [com.zolotyh.planace.middleware :as mid]
-            [com.zolotyh.planace.ui :as ui]
-            [com.zolotyh.planace.auth :as custom-auth]
-            [com.zolotyh.planace.room :as room]
-            [com.zolotyh.planace.worker :as worker]
-            [com.zolotyh.planace.schema :as schema]
-            [clojure.test :as test]
-            [clojure.tools.logging :as log]
-            [clojure.tools.namespace.repl :as tn-repl]
-            [malli.core :as malc]
-            [malli.registry :as malr]
-            [nrepl.cmdline :as nrepl-cmd])
+  (:require
+   [clojure.test :as test]
+   [clojure.tools.logging :as log]
+   [clojure.tools.namespace.repl :as tn-repl]
+   [com.biffweb :as biff]
+   [com.zolotyh.planace.app :as app]
+   [com.zolotyh.planace.email :as email]
+   [com.zolotyh.planace.home :as home]
+   [com.zolotyh.planace.middleware :as mid]
+   [com.zolotyh.planace.schema :as schema]
+   [com.zolotyh.planace.ui :as ui]
+   [com.zolotyh.planace.worker :as worker]
+   [malli.core :as malc]
+   [malli.registry :as malr]
+   [malli.util :as mu]
+   [nrepl.cmdline :as nrepl-cmd])
   (:gen-class))
+
 
 (def modules
   [app/module
    (biff/authentication-module {})
-   room/module
    home/module
-   custom-auth/module
    schema/module
    worker/module])
 
@@ -45,12 +44,19 @@
   (biff/add-libs)
   (biff/eval-files! ctx)
   (generate-assets! ctx)
+  (biff/catchall (require 'com.zolotyh.planace-test))
   (test/run-all-tests #"com.zolotyh.planace.*-test"))
 
 (def malli-opts
   {:registry (malr/composite-registry
               malc/default-registry
               (apply biff/safe-merge (keep :schema modules)))})
+
+; (def malli-opts
+;   {:registry (malr/composite-registry
+;               malc/default-registry
+;               (apply biff/safe-merge (keep :schema modules)))})
+
 
 (def initial-system
   {:biff/modules #'modules
@@ -60,8 +66,7 @@
    :biff.beholder/on-save #'on-save
    :biff.middleware/on-error #'ui/on-error
    :biff.xtdb/tx-fns biff/tx-fns
-   :com.zolotyh.planace/chat-clients (atom #{})
-   :com.zolotyh.planace/votes (atom {})})
+   :com.zolotyh.planace/chat-clients (atom #{})})
 
 (defonce system (atom {}))
 

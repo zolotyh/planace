@@ -1,3 +1,3 @@
 (ns com.zolotyh.planace.settings)
 
-(def app-name "Planace")
+(def app-name "My Application")

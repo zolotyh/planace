@@ -1,45 +1,38 @@
-(ns com.zolotyh.planace.schema)
-
+(ns com.zolotyh.planace.schema
+  (:require
+   [malli.generator :as mg]))
 
 (def schema
-  {:user/id :uuid,
+  {:user/id :uuid
    :user [:map {:closed true}
-          [:xt/id :user/id]
-          [:user/email :string]
-          [:user/joined-at inst?] [:user/first-name {:optional true} :string]
-          [:user/last-name {:optional true} :string]
-          [:user/foo {:optional true} :string]
-          [:user/bar {:optional true} :string]],
-   :room/id :uuid,
+          [:xt/id                     :user/id]
+          [:user/email                :string]
+          [:user/last-nane            :string]
+          [:user/first-name           :string]
+          [:user/joined-at  inst?]]
+
+   :room/id :uuid
    :room [:map {:closed true}
-          [:xt/id :room/id]
-          [:room/user :user/id]
-          [:room/active-vote :vote/id]
-          [:room/name :string]
-          [:room/created-at inst?]
-          [:room/users [:vector {:optional true}
-                        [:map {:closed true}
-                         [:id :uuid]
-                         [:first-name string?]
-                         [:last-name string?]]]]
-          [:room/update-at inst?]],
+          [:xt/id :uuid]
+          [:room/title :string]
+          [:room/current-vote :uuid]
+          [:room/owner :uuid]
+          ; ; [:room/default-vote-type :vote/vote-type]
+          [:room/members [:vector :uuid]]]
 
-   :vote/id :uuid,
-   :vote [:map {:closed false}
+   :vote/vote-type [:enum :fib :natural :t-shirts]
+   :vote/id :uuid
+   :vote [:map {:closed true}
           [:xt/id :vote/id]
-          [:vote/open? :boolean]
-          [:vote/owner :user/id]
-          [:vote/results
-           [:map-of :user/id
-            [:map {:closed true}
-             [:vote int?]
-             [:first-name {:optional true} :string]
-             [:last-name {:optional true} :string]]]]
           [:vote/room :room/id]
-          [:vote/type [:enum :fib :t-shirts :simple]] [:vote/title :string]
-          [:vote/updated-at inst?]],
-   :msg/id :uuid,
-   :msg [:map {:closed true} [:xt/id :msg/id] [:msg/user :user/id]
-         [:msg/text :string] [:msg/sent-at inst?]]})
+          [:vote/open :boolean]
+          ; [:vote/type :vote/vote-type]
+          [:vote/result [:vector
+                         [:map {:closed true}
+                          [:vote :int]
+                          [:user :user/id]]]]
+          [:vote/title :string]]})
+(mg/generate (:room schema))
 
-(def module {:schema schema})
+(def module
+  {:schema schema})

@@ -1,53 +1,55 @@
 (ns com.zolotyh.planace.home
-  (:require
-   [com.biffweb :as biff]
-   [com.zolotyh.planace.middleware :as mid]
-   [com.zolotyh.planace.settings :as settings]
-   [com.zolotyh.planace.ui :as ui :refer [panel]]))
+  (:require [clj-http.client :as http]
+            [com.biffweb :as biff]
+            [com.zolotyh.planace.middleware :as mid]
+            [com.zolotyh.planace.ui :as ui]
+            [com.zolotyh.planace.settings :as settings]
+            [rum.core :as rum]
+            [xtdb.api :as xt]))
 
 (def email-disabled-notice
   [:.text-sm.mt-3.bg-blue-100.rounded.p-2
    "Until you add API keys for MailerSend and reCAPTCHA, we'll print your sign-up "
    "link to the console. See config.edn."])
 
-(defn sign-up [{:keys [recaptcha/site-key params] :as ctx}]
+(defn home-page [{:keys [recaptcha/site-key params] :as ctx}]
   (ui/page
    (assoc ctx ::ui/recaptcha true)
-   (panel
-    (biff/form
-     {:action "/auth/send-link"
-      :id "signup"
-      :hidden {:on-error "/"}}
-     (biff/recaptcha-callback "submitSignup" "signup")
-     [:h2.text-2xl.font-bold (str "Sign up for " settings/app-name)]
-     [:.h-3]
-     [:.mb-4
-      [:label.block.text-gray-700.text-sm.font-bold.mb-2 {:for "#email"} "Email:"]
-      [:input#email.w-80.text-slate-900 {:name "email" :type "email" :autocomplete "email" :placeholder "my@example.com"}]]
-     [:mb-4
-      [:button.btn.g-recaptcha
-       (merge (when site-key
-                {:data-sitekey site-key
-                 :data-callback "submitSignup"})
-              {:type "submit"})
-       "Sign up"]]
-     (when-some [error (:error params)]
-       [:<>
-        [:.h-1]
-        [:.text-sm.text-red-600
-         (case error
-           "recaptcha" (str "You failed the recaptcha test. Try again, "
-                            "and make sure you aren't blocking scripts from Google.")
-           "invalid-email" "Invalid email. Try again with a different address."
-           "send-failed" (str "We weren't able to send an email to that address. "
-                              "If the problem persists, try another address.")
-           "There was an error.")]])
-     [:.h-1])
-    [:.bg-white.shadow-md.rounded.px-8.pt-6.pb-8.mb-4.text-slate-900
-     [:.text-sm "Already have an account? " [:a.link {:href "/"} "Sign in"] "."]
-     [:.h-3]
-     biff/recaptcha-disclosure
-     email-disabled-notice])))
+   (biff/form
+    {:action "/auth/send-link"
+     :id "signup"
+     :hidden {:on-error "/"}}
+    (biff/recaptcha-callback "submitSignup" "signup")
+    [:h2.text-2xl.font-bold (str "Sign up for " settings/app-name)]
+    [:.h-3]
+    [:.flex
+     [:input#email {:name "email"
+                    :type "email"
+                    :autocomplete "email"
+                    :placeholder "Enter your email address"}]
+     [:.w-3]
+     [:button.btn.g-recaptcha
+      (merge (when site-key
+               {:data-sitekey site-key
+                :data-callback "submitSignup"})
+             {:type "submit"})
+      "Sign up"]]
+    (when-some [error (:error params)]
+      [:<>
+       [:.h-1]
+       [:.text-sm.text-red-600
+        (case error
+          "recaptcha" (str "You failed the recaptcha test. Try again, "
+                           "and make sure you aren't blocking scripts from Google.")
+          "invalid-email" "Invalid email. Try again with a different address."
+          "send-failed" (str "We weren't able to send an email to that address. "
+                             "If the problem persists, try another address.")
+          "There was an error.")]])
+    [:.h-1]
+    [:.text-sm "Already have an account? " [:a.link {:href "/signin"} "Sign in"] "."]
+    [:.h-3]
+    biff/recaptcha-disclosure
+    email-disabled-notice)))
 
 (defn link-sent [{:keys [params] :as ctx}]
   (ui/page
@@ -83,41 +85,43 @@
 (defn signin-page [{:keys [recaptcha/site-key params] :as ctx}]
   (ui/page
    (assoc ctx ::ui/recaptcha true)
-   (panel
-    (biff/form
-     {:action "/auth/send-code"
-      :id "signin"
-      :hidden {:on-error "/signin"}}
-     (biff/recaptcha-callback "submitSignin" "signin")
-     [:h2.text-2xl.font-bold.text-center.pb-5.color-slate-900 "Sign in"]
-     [:.h-3]
-     [:.mb-4
-      [:label.block.text-gray-700.text-sm.font-bold.mb-2 {:for "#email"} "Email:"]
-      [:input#email.w-80.text-slate-900 {:name "email" :type "email" :autocomplete "email" :placeholder "my@example.com"}]]
+   (biff/form
+    {:action "/auth/send-code"
+     :id "signin"
+     :hidden {:on-error "/signin"}}
+    (biff/recaptcha-callback "submitSignin" "signin")
+    [:h2.text-2xl.font-bold "Sign in to " settings/app-name]
+    [:.h-3]
+    [:.flex
+     [:input#email {:name "email"
+                    :type "email"
+                    :autocomplete "email"
+                    :placeholder "Enter your email address"}]
+     [:.w-3]
      [:button.btn.g-recaptcha
       (merge (when site-key
                {:data-sitekey site-key
                 :data-callback "submitSignin"})
              {:type "submit"})
-      "Sign in"]
-     (when-some [error (:error params)]
-       [:<>
-        [:.h-1]
-        [:.text-sm.text-red-600
-         (case error
-           "recaptcha" (str "You failed the recaptcha test. Try again, "
-                            "and make sure you aren't blocking scripts from Google.")
-           "invalid-email" "Invalid email. Try again with a different address."
-           "send-failed" (str "We weren't able to send an email to that address. "
-                              "If the problem persists, try another address.")
-           "invalid-link" "Invalid or expired link. Sign in to get a new link."
-           "not-signed-in" "You must be signed in to view that page."
-           "There was an error.")]])
-     [:.h-1]
-     [:.text-sm "Don't have an account yet? " [:a.link {:href "/sign-up"} "Sign up"] "."]
-     [:.h-3]
-     biff/recaptcha-disclosure
-     email-disabled-notice))))
+      "Sign in"]]
+    (when-some [error (:error params)]
+      [:<>
+       [:.h-1]
+       [:.text-sm.text-red-600
+        (case error
+          "recaptcha" (str "You failed the recaptcha test. Try again, "
+                           "and make sure you aren't blocking scripts from Google.")
+          "invalid-email" "Invalid email. Try again with a different address."
+          "send-failed" (str "We weren't able to send an email to that address. "
+                             "If the problem persists, try another address.")
+          "invalid-link" "Invalid or expired link. Sign in to get a new link."
+          "not-signed-in" "You must be signed in to view that page."
+          "There was an error.")]])
+    [:.h-1]
+    [:.text-sm "Don't have an account yet? " [:a.link {:href "/"} "Sign up"] "."]
+    [:.h-3]
+    biff/recaptcha-disclosure
+    email-disabled-notice)))
 
 (defn enter-code-page [{:keys [recaptcha/site-key params] :as ctx}]
   (ui/page
@@ -161,8 +165,8 @@
 
 (def module
   {:routes [["" {:middleware [mid/wrap-redirect-signed-in]}
-             ["/"                  {:get signin-page}]]
+             ["/"                  {:get home-page}]]
             ["/link-sent"          {:get link-sent}]
             ["/verify-link"        {:get verify-email-page}]
-            ["/sign-up"             {:get sign-up}]
+            ["/signin"             {:get signin-page}]
             ["/verify-code"        {:get enter-code-page}]]})

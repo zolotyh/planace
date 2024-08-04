@@ -1,4 +1,5 @@
 (ns com.zolotyh.planace-test
+  ;; If you add more test files, require them here so that they'll get loaded by com.zolotyh.planace/on-save
   (:require [cheshire.core :as cheshire]
             [clojure.string :as str]
             [clojure.test :refer [deftest is]]
@@ -10,13 +11,13 @@
             [xtdb.api :as xt]))
 
 (deftest example-test
-  (is (= 5 (+ 2 2))))
+  (is (= 4 (+ 2 2))))
 
-;; (defn get-context [node]
-;;   {:biff.xtdb/node  node
-;;    :biff/db         (xt/db node)
-;;    :biff/malli-opts #'main/malli-opts})
-;;
+(defn get-context [node]
+  {:biff.xtdb/node  node
+   :biff/db         (xt/db node)
+   :biff/malli-opts #'main/malli-opts})
+
 ;; (deftest send-message-test
 ;;   (with-open [node (test-xtdb-node [])]
 ;;     (let [message (mg/generate :string)
