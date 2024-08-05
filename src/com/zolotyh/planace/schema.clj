@@ -1,24 +1,22 @@
-(ns com.zolotyh.planace.schema
-  (:require
-   [malli.generator :as mg]))
+(ns com.zolotyh.planace.schema)
 
 (def schema
   {:user/id :uuid
    :user [:map {:closed true}
           [:xt/id                     :user/id]
           [:user/email                :string]
-          [:user/last-nane            :string]
-          [:user/first-name           :string]
+          [:user/last-nane            string?]
+          [:user/first-name           string?]
           [:user/joined-at  inst?]]
 
    :room/id :uuid
    :room [:map {:closed true}
-          [:xt/id :uuid]
+          [:xt/id :room/id]
           [:room/title :string]
-          [:room/current-vote :uuid]
-          [:room/owner :uuid]
-          ; ; [:room/default-vote-type :vote/vote-type]
-          [:room/members [:vector :uuid]]]
+          [:room/current-vote :vote/id]
+          [:room/owner :user/id]
+          [:room/default-vote-type :vote/vote-type]
+          [:room/members [:vector :user/id]]]
 
    :vote/vote-type [:enum :fib :natural :t-shirts]
    :vote/id :uuid
@@ -26,13 +24,11 @@
           [:xt/id :vote/id]
           [:vote/room :room/id]
           [:vote/open :boolean]
-          ; [:vote/type :vote/vote-type]
+          [:vote/type :vote/vote-type]
+          [:vote/title :string]
           [:vote/result [:vector
                          [:map {:closed true}
                           [:vote :int]
-                          [:user :user/id]]]]
-          [:vote/title :string]]})
-(mg/generate (:room schema))
-
+                          [:user :user/id]]]]]})
 (def module
   {:schema schema})

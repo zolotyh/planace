@@ -32,6 +32,7 @@
  {:db/doc-type :room
   :xt/id #uuid "1930a531-7572-4e67-8569-497228098563"
   :room/title "room 1",
+  :room/default-vote-type :natural
   :room/current-vote #uuid "8e1b9d37-7a63-42aa-a41e-af26f7df5802",
   :room/owner #uuid "90b41082-be77-411b-8a51-a45d825d3f04",
   :room/members [#uuid "90b41082-be77-411b-8a51-a45d825d3f04"
@@ -42,6 +43,7 @@
   :xt/id #uuid "8e1b9d37-7a63-42aa-a41e-af26f7df5802"
   :vote/room #uuid "1930a531-7572-4e67-8569-497228098563"
   :vote/open false
+  :vote/type :natural
   :vote/title "My super vote2"
   :vote/result [{:vote 4
                  :user #uuid "90b41082-be77-411b-8a51-a45d825d3f04"}
