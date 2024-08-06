@@ -1,8 +1,10 @@
 (ns com.zolotyh.planace.middleware
-  (:require [com.biffweb :as biff]
-            [muuntaja.middleware :as muuntaja]
-            [ring.middleware.anti-forgery :as csrf]
-            [ring.middleware.defaults :as rd]))
+  (:require
+   [com.biffweb :as biff]
+   [com.zolotyh.planace.i18n :as i18nModule]
+   [muuntaja.middleware :as muuntaja]
+   [ring.middleware.anti-forgery :as csrf]
+   [ring.middleware.defaults :as rd]))
 
 (defn wrap-redirect-signed-in [handler]
   (fn [{:keys [session] :as ctx}]
@@ -10,6 +12,9 @@
       {:status 303
        :headers {"location" "/app"}}
       (handler ctx))))
+
+(defn i18n [handler]
+  (fn [ctx] (handler (merge {:i18n (partial i18nModule/i18n [:en-US])} ctx))))
 
 (defn wrap-signed-in [handler]
   (fn [{:keys [session] :as ctx}]
