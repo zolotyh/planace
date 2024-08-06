@@ -39,6 +39,22 @@
                  #uuid "c98e4330-6624-461e-8e45-008a91153a00"
                  #uuid "3d1562ca-97ee-4efe-9536-60c294fd3f09"
                  #uuid "f22df1fe-d02d-4a30-8d4a-db0efdf61f47"]}
+
+ {:db/doc-type :vote
+  :xt/id #uuid "b010e666-f5fc-48fd-afa6-6c09b4c4b4df"
+  :vote/room #uuid "1930a531-7572-4e67-8569-497228098563"
+  :vote/open false
+  :vote/type :natural
+  :vote/title "My super vote2"
+  :vote/result [{:vote 4
+                 :user #uuid "90b41082-be77-411b-8a51-a45d825d3f04"}
+                {:vote 3
+                 :user #uuid "c98e4330-6624-461e-8e45-008a91153a00"}
+                {:vote 2
+                 :user #uuid "3d1562ca-97ee-4efe-9536-60c294fd3f09"}
+                {:vote 1
+                 :user #uuid "f22df1fe-d02d-4a30-8d4a-db0efdf61f47"}]}
+
  {:db/doc-type :vote
   :xt/id #uuid "8e1b9d37-7a63-42aa-a41e-af26f7df5802"
   :vote/room #uuid "1930a531-7572-4e67-8569-497228098563"
@@ -53,15 +69,3 @@
                  :user #uuid "3d1562ca-97ee-4efe-9536-60c294fd3f09"}
                 {:vote 1
                  :user #uuid "f22df1fe-d02d-4a30-8d4a-db0efdf61f47"}]}]
-
-
-   ; :vote [:map {:closed true}
-   ;        [:xt/id :vote/id]
-   ;        [:vote/room :room/id]
-   ;        [:vote/open :boolean]
-   ;        ; [:vote/type :vote/vote-type]
-   ;        [:vote/votes [:vector
-   ;                      [:map {:closed true}
-   ;                       [:vote :int]
-   ;                       [:user :user/id]]]]
-   ;        [:vote/title :string]]}]
