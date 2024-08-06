@@ -10,8 +10,6 @@
                         :vote/title "New Vote"
                         :vote/type (:room/default-vote-type default-room-data)})
 
-
-
 (defn create-room [{:keys [session] :as ctx} room-data]
   (let [current-user-uid (:uid session)
         vote-id (random-uuid)
