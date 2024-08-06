@@ -1,46 +1,26 @@
 (ns com.zolotyh.planace-test
   ;; If you add more test files, require them here so that they'll get loaded by com.zolotyh.planace/on-save
-  (:require [cheshire.core :as cheshire]
-            [clojure.string :as str]
-            [clojure.test :refer [deftest is]]
-            [com.biffweb :as biff :refer [test-xtdb-node]]
-            [com.zolotyh.planace :as main]
-            [com.zolotyh.planace.app :as app]
-            [malli.generator :as mg]
-            [rum.core :as rum]
-            [xtdb.api :as xt]))
+  (:require
+   [clojure.test :refer [deftest is testing]]
+   [com.zolotyh.planace.model :refer [add-user-vote create-new-vote]]))
 
-(deftest example-test
-  (is (= 4 (+ 2 2))))
+(deftest vote-test
+  (testing "then pass uuid of user and vote then it should be set"
+    (let [uuid #uuid "90b41082-be77-411b-8a51-a45d825d3f04"
+          vote  {:vote/result [{:vote 4 :user uuid}]}
+          result (add-user-vote vote uuid 100)]
+      (is (= (get-in result [:vote/result 0 :vote]) 100)))))
 
-(defn get-context [node]
-  {:biff.xtdb/node  node
-   :biff/db         (xt/db node)
-   :biff/malli-opts #'main/malli-opts})
-
-;; (deftest send-message-test
-;;   (with-open [node (test-xtdb-node [])]
-;;     (let [message (mg/generate :string)
-;;           user    (mg/generate :user main/malli-opts)
-;;           ctx     (assoc (get-context node) :session {:uid (:xt/id user)})
-;;           _       (app/send-message ctx {:text (cheshire/generate-string {:text message})})
-;;           db      (xt/db node) ; get a fresh db value so it contains any transactions
-;;                                ; that send-message submitted.
-;;           doc     (biff/lookup db :msg/text message)]
-;;       (is (some? doc))
-;;       (is (= (:msg/user doc) (:xt/id user))))))
-;;
-;; (deftest chat-test
-;;   (let [n-messages (+ 3 (rand-int 10))
-;;         now        (java.util.Date.)
-;;         messages   (for [doc (mg/sample :msg (assoc main/malli-opts :size n-messages))]
-;;                      (assoc doc :msg/sent-at now))]
-;;     (with-open [node (test-xtdb-node messages)]
-;;       (let [response (app/chat {:biff/db (xt/db node)})
-;;             html     (rum/render-html response)]
-;;         (is (str/includes? html "Messages sent in the past 10 minutes:"))
-;;         (is (not (str/includes? html "No messages yet.")))
-;;         ;; If you add Jsoup to your dependencies, you can use DOM selectors instead of just regexes:
-;;         ;(is (= n-messages (count (.select (Jsoup/parse html) "#messages > *"))))
-;;         (is (= n-messages (count (re-seq #"init send newMessage to #message-header" html))))
-;;         (is (every? #(str/includes? html (:msg/text %)) messages))))))
+(deftest create-vote-test
+  (testing "should create new vote from params and room metadata"
+    (let [uuid #uuid "b2c69ecf-c899-4b55-908e-46e7ebb8d056"
+          room-uuid  #uuid "3c777afc-5335-4438-8e9f-316977d07495"
+          room {:xt/id room-uuid :room/members [uuid]}
+          vote {:vote/title "test-title"}
+          vote-item {:user uuid}]
+      (is
+       (=
+        (create-new-vote room vote)
+        {:vote/title "test-title"
+         :vote/room room-uuid
+         :vote/result [vote-item]})))))

@@ -13,7 +13,6 @@
    [com.zolotyh.planace.worker :as worker]
    [malli.core :as malc]
    [malli.registry :as malr]
-   [malli.util :as mu]
    [nrepl.cmdline :as nrepl-cmd])
   (:gen-class))
 
