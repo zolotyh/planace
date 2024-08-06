@@ -1,9 +1,10 @@
 (ns com.zolotyh.planace.db
   (:require
-   [com.zolotyh.planace.model :refer [create-new-vote]]
-   [xtdb.api :as xt]))
+   [com.biffweb :as biff]
+   [com.zolotyh.planace.model :refer [create-new-vote]]))
 
-(def default-room-data {:room/default-vote-type :natural})
+(def default-room-data {:room/default-vote-type :natural
+                        :room/members []})
 
 (def default-vote-data {:vote/open false
                         :vote/title "New Vote"
@@ -11,26 +12,17 @@
 
 
 
-(defn create-room [ctx room-data] {}
-  (let [room (xt/submit-tx
-              ctx
-              (merge {:db/op :create
-                      :db/doc-type :room}
-                     default-room-data
-                     room-data))
-
-        vote-data (merge {:db/op :create
-                          :db/doc-type :create
-                          :vote/room (:xt/id room)}
-                         default-vote-data)
-
-        vote (xt/submit-tx
-              ctx
-              (merge
-               vote-data
-               (create-new-vote room vote-data)))]
-
-    (xt/submit-tx ctx (merge {:db/op :update
-                              :db/doc-type :room
-                              :room/active-vote (:xt/id vote)}))))
-
+(defn create-room [{:keys [session] :as ctx} room-data]
+  (let [current-user-uid (:uid session)
+        vote-id (random-uuid)
+        room-id (random-uuid)
+        room-data (merge {:db/doc-type :room
+                          :room/current-vote vote-id
+                          :room/owner current-user-uid
+                          :room/members [current-user-uid]
+                          :xt/id room-id}
+                         default-room-data
+                         room-data)
+        vote-data (create-new-vote room-data (merge default-vote-data {:xt/id vote-id}))]
+    (biff/submit-tx ctx [room-data])
+    (biff/submit-tx ctx [(merge {:db/doc-type :vote} vote-data)])))

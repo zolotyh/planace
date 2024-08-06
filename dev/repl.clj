@@ -2,9 +2,9 @@
   (:require
    [clojure.edn :as edn]
    [clojure.java.io :as io]
-   [clojure.pprint :as pprint]
    [com.biffweb :as biff :refer [q]]
-   [com.zolotyh.planace :as main]))
+   [com.zolotyh.planace :as main]
+   [com.zolotyh.planace.db :refer [create-room]]))
 
 ;; REPL-driven development
 ;; ----------------------------------------------------------------------------------------
@@ -60,17 +60,34 @@
   ;; main/components, :tasks, :queues, config.env, or deps.edn.
   (main/refresh)
 
+  (defn with-dump-session [context]
+    (merge {:session {:uid #uuid "4be79f30-3978-446d-ab3e-6afb5bc0d78f"}}
+           context))
+
+  (create-room
+   (with-dump-session (get-context))
+   {:room/title "Hello"
+    :room/current-vote #uuid "173d0f48-f9ef-4e50-8f9b-63ccc71ec016"
+    :room/owner #uuid "282df800-7c52-425c-8242-2ba4d5aa8ec7"
+    :room/members [#uuid "282df800-7c52-425c-8242-2ba4d5aa8ec7"]})
+
   ;; Call this in dev if you'd like to add some seed data to your database. If
   ;; you edit the seed data (in resources/fixtures.edn), you can reset the
   ;; database by running `rm -r storage/xtdb` (DON'T run that in prod),
   ;; restarting your app, and calling add-fixtures again.
   (add-fixtures)
 
+
   ;; Query the database
   (let [{:keys [biff/db] :as ctx} (get-context)]
     (q db
        '{:find (pull user [*])
          :where [[user :user/email]]}))
+
+  (let [{:keys [biff/db] :as ctx} (get-context)]
+    (q db
+       '{:find (pull user [*])
+         :where [[user :vote/title]]}))
 
   ;; Update an existing user's email address
   (let [{:keys [biff/db] :as ctx} (get-context)

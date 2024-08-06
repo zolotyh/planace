@@ -13,6 +13,7 @@
    [com.zolotyh.planace.worker :as worker]
    [malli.core :as malc]
    [malli.registry :as malr]
+   [malli.util :as mu]
    [nrepl.cmdline :as nrepl-cmd])
   (:gen-class))
 
@@ -49,13 +50,8 @@
 (def malli-opts
   {:registry (malr/composite-registry
               malc/default-registry
+              ; mu/schemas
               (apply biff/safe-merge (keep :schema modules)))})
-
-; (def malli-opts
-;   {:registry (malr/composite-registry
-;               malc/default-registry
-;               (apply biff/safe-merge (keep :schema modules)))})
-
 
 (def initial-system
   {:biff/modules #'modules

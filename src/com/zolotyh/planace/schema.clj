@@ -28,7 +28,7 @@
           [:vote/title :string]
           [:vote/result [:vector
                          [:map {:closed true}
-                          [:vote :int]
+                          [:vote {:optional true} int?]
                           [:user :user/id]]]]]})
 (def module
   {:schema schema})
