@@ -1,11 +1,50 @@
 (ns com.zolotyh.planace.ui
   (:require [cheshire.core :as cheshire]
             [clojure.java.io :as io]
-            [com.zolotyh.planace.settings :as settings]
             [com.biffweb :as biff]
+            [com.zolotyh.planace.settings :as settings]
             [ring.middleware.anti-forgery :as csrf]
             [ring.util.response :as ring-response]
             [rum.core :as rum]))
+
+
+(defn vote-info [vote]
+  [:div.text-red-700 "vote info"])
+
+(defn vote-panel-item [_]
+  [:div.text-xl.text-color-red "test"])
+
+(defn vote-result-item [value]
+  [:div.text-white.bg-slate-600 value])
+
+(defn vote-panel []
+  [:div.text-xl.px-5.py-2.bg-slate-900.text-white.mb-4.mt-10 (map vote-panel-item (range 10))])
+
+
+(defn vote-results []
+  [:<>
+   (vote-info {})
+   [:div.text-xl.px-5.py-2.bg-slate-900.text-white "Vote results"]
+   [:div.mb-8
+    (map vote-result-item (range 10))]])
+
+(defn header []
+  [:header "header"])
+
+; .header { grid-area: 1 / 1 / 2 / 10}; }
+; .profile { grid-area: 1 / 10 / 2 / 13}; }
+; .main { grid-area: 2 / 1 / 3 / 10}; }
+; .right-sidebar { grid-area: 2 / 10 / 3 / 13}; }
+; .footer { grid-area: 3 / 1 / 4 / 13}; }
+
+(defn main-layout [{:keys [header right-sidebar main footer]}]
+  [:div {:class "wrapper px-5 py-5 h-screen w-screen bg-green"}
+   [:div {:class "header bg-slate-900 text-white"} "header"]
+   [:div {:class "profile bg-slate-900 text-white"} "profile"]
+   [:div {:class "main bg-slate-900 text-white"} "main"]
+   [:div {:class "right-sidebar bg-slate-900 text-white"} "sidebar"]
+   [:div {:class "footer bg-slate-900 text-white"} "footer"]])
+
 
 (defn css-path []
   (if-some [last-modified (some-> (io/resource "public/css/main.css")
@@ -47,14 +86,11 @@
 (defn page [ctx & body]
   (base
    ctx
-   [:.flex-grow]
-   [:.p-3.mx-auto.max-w-screen-sm.w-full
+   [:div
     (when (bound? #'csrf/*anti-forgery-token*)
       {:hx-headers (cheshire/generate-string
                     {:x-csrf-token csrf/*anti-forgery-token*})})
-    body]
-   [:.flex-grow]
-   [:.flex-grow]))
+    body]))
 
 (defn on-error [{:keys [status ex] :as ctx}]
   {:status status
