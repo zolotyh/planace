@@ -28,22 +28,13 @@
    [:div.mb-8
     (map vote-result-item (range 10))]])
 
-(defn header []
-  [:header "header"])
-
-; .header { grid-area: 1 / 1 / 2 / 10}; }
-; .profile { grid-area: 1 / 10 / 2 / 13}; }
-; .main { grid-area: 2 / 1 / 3 / 10}; }
-; .right-sidebar { grid-area: 2 / 10 / 3 / 13}; }
-; .footer { grid-area: 3 / 1 / 4 / 13}; }
-
-(defn main-layout [{:keys [header right-sidebar main footer]}]
+(defn main-layout [{:keys [header right-sidebar main footer profile]}]
   [:div {:class "wrapper px-5 py-5 h-screen w-screen bg-green"}
-   [:div {:class "header bg-slate-900 text-white"} "header"]
-   [:div {:class "profile bg-slate-900 text-white"} "profile"]
-   [:div {:class "main bg-slate-900 text-white"} "main"]
-   [:div {:class "right-sidebar bg-slate-900 text-white"} "sidebar"]
-   [:div {:class "footer bg-slate-900 text-white"} "footer"]])
+   [:div {:class "header bg-slate-900 text-white"} header]
+   [:div {:class "profile bg-slate-900 text-white"} profile]
+   [:div {:class "main bg-slate-900 text-white"} main]
+   [:div {:class "right-sidebar bg-slate-900 text-white"} right-sidebar]
+   [:div {:class "footer bg-slate-900 text-white"} footer]])
 
 
 (defn css-path []
