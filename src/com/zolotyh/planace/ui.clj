@@ -54,13 +54,12 @@
     (str "/css/main.css?t=" last-modified)
     "/css/main.css"))
 
-(defn js-path []
-  (if-some [last-modified (some-> (io/resource "public/js/main.js")
+(defn js-path [path]
+  (if-some [last-modified (some-> (io/resource (str "public" path))
                                   ring-response/resource-data
                                   :last-modified
                                   (.getTime))]
-    (str "/js/main.js?t=" last-modified)
-    "/js/main.js"))
+    (str path "?t=" last-modified) path))
 
 (defn base [{:keys [::recaptcha] :as ctx} & body]
   (apply
@@ -73,10 +72,10 @@
                      :image "https://clojure.org/images/clojure-logo-120b.png"})
        (update :base/head (fn [head]
                             (concat [[:link {:rel "stylesheet" :href (css-path)}]
-                                     [:script {:src (js-path)}]
-                                     [:script {:src "https://unpkg.com/htmx.org@1.9.10"}]
-                                     [:script {:src "https://unpkg.com/htmx.org/dist/ext/ws.js"}]
-                                     [:script {:src "https://unpkg.com/hyperscript.org@0.9.8"}]
+                                     [:script {:src (js-path "/js/htmx.min.js")}]
+                                     [:script {:src (js-path "/js/ws.js")}]
+                                     [:script {:src (js-path "/js/main.js")}]
+                                     [:script {:src (js-path "/js/_hyperscript.min.js")}]
                                      (when recaptcha
                                        [:script {:src "https://www.google.com/recaptcha/api.js"
                                                  :async "async" :defer "defer"}])]
