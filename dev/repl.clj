@@ -4,7 +4,7 @@
    [clojure.java.io :as io]
    [com.biffweb :as biff :refer [q]]
    [com.zolotyh.planace :as main]
-   [com.zolotyh.planace.db :refer [create-room]]))
+   [com.zolotyh.planace.db :refer [create-room q-by-ids]]))
 
 ;; REPL-driven development
 ;; ----------------------------------------------------------------------------------------
@@ -76,6 +76,9 @@
   ;; database by running `rm -r storage/xtdb` (DON'T run that in prod),
   ;; restarting your app, and calling add-fixtures again.
   (add-fixtures)
+
+
+  (q-by-ids (get-context) [#uuid "8ce18a78-0146-41ac-8725-a0ae457741fd" #uuid "1930a531-7572-4e67-8569-497228098563"])
 
 
   ;; Query the database

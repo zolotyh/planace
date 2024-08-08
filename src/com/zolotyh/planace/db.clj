@@ -1,7 +1,8 @@
 (ns com.zolotyh.planace.db
   (:require
    [com.biffweb :as biff]
-   [com.zolotyh.planace.model :refer [create-new-vote]]))
+   [com.zolotyh.planace.model :refer [create-new-vote]]
+   [xtdb.api :as xt]))
 
 
 (defn q-by-ids [{:keys [biff/db]} ids]
@@ -17,17 +18,22 @@
                         :vote/title "New Vote"
                         :vote/type (:room/default-vote-type default-room-data)})
 
-(defn create-room [{:keys [session] :as ctx} room-data]
-  (let [current-user-uid (:uid session)
+(defn create-room [{:keys [session biff/db] :as ctx} room-data]
+  (let [user (xt/entity db (:uid session))
+        user-id (:uid session)
         vote-id (random-uuid)
         room-id (random-uuid)
-        room-data (merge {:db/doc-type :room
-                          :room/current-vote vote-id
-                          :room/owner current-user-uid
-                          :room/members [current-user-uid]
+        room-data (merge {:room/current-vote vote-id
+                          :room/owner user-id
+                          :room/members [user-id]
                           :xt/id room-id}
                          default-room-data
                          room-data)
         vote-data (create-new-vote room-data (merge default-vote-data {:xt/id vote-id}))]
-    (biff/submit-tx ctx [room-data])
-    (biff/submit-tx ctx [(merge {:db/doc-type :vote} vote-data)])))
+
+    (biff/submit-tx ctx [(merge {:db/doc-type :room} room-data)
+                         (merge {:db/doc-type :vote} vote-data)
+                         (merge user {:db/doc-type :user,
+                                      :db/op :update,
+                                      :user/rooms (conj (:user/rooms user) room-id)})])
+    {:uuid room-id}))
