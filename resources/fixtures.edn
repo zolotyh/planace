@@ -5,14 +5,17 @@
   :user/email "u1@example.com",
   :user/last-nane "820Z3Wa7Ko",
   :user/first-name "8pxYAHWHL5Rtopt0572X4WU3u5J",
-  :user/joined-at #inst "1969-12-31T23:59:00.317-00:00"}
+  :user/joined-at #inst "1969-12-31T23:59:00.317-00:00"
+  :user/rooms [#uuid "1930a531-7572-4e67-8569-497228098563"]}
+
 
  {:db/doc-type :user
   :xt/id #uuid "c98e4330-6624-461e-8e45-008a91153a00"
   :user/email "u2@example.com",
   :user/last-nane "user 2 last name",
   :user/first-name "user 2 first name",
-  :user/joined-at #inst "1969-12-31T23:59:00.317-00:00"}
+  :user/joined-at #inst "1969-12-31T23:59:00.317-00:00"
+  :user/rooms [#uuid "1930a531-7572-4e67-8569-497228098563"]}
 
 
  {:db/doc-type :user
@@ -20,7 +23,8 @@
   :user/email "u3@example.com",
   :user/last-nane "user3 first name",
   :user/first-name "user3 last name",
-  :user/joined-at #inst "1969-12-31T23:59:00.317-00:00"}
+  :user/joined-at #inst "1969-12-31T23:59:00.317-00:00"
+  :user/rooms [#uuid "1930a531-7572-4e67-8569-497228098563"]}
 
  {:db/doc-type :user
   :xt/id #uuid "3d1562ca-97ee-4efe-9536-60c294fd3f09"

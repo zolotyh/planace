@@ -7,7 +7,9 @@
           [:user/email                :string]
           [:user/last-nane            string?]
           [:user/first-name           string?]
+          [:user/rooms {:optional true} [:vector :room/id]]
           [:user/joined-at  inst?]]
+
 
    :room/id :uuid
    :room [:map {:closed true}

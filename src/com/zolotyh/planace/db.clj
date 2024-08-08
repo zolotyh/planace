@@ -3,6 +3,13 @@
    [com.biffweb :as biff]
    [com.zolotyh.planace.model :refer [create-new-vote]]))
 
+
+(defn q-by-ids [{:keys [biff/db]} ids]
+  (let [query '{:find (pull item [*])
+                :in [[id ...]]
+                :where [[item :xt/id id]]}]
+    (biff/q db query ids)))
+
 (def default-room-data {:room/default-vote-type :natural
                         :room/members []})
 

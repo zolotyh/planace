@@ -8,6 +8,11 @@
             [rum.core :as rum]))
 
 
+(defn center [a1 a2]
+  (let [{class :class :or {class ""}} a1
+        elem (if (vector? a1) a1 a2)]
+    [:div {:class (str "flex content-center items-center justify-center " class)} elem]))
+
 (defn vote-info [vote]
   [:div.text-red-700 "vote info"])
 
