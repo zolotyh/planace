@@ -3,11 +3,11 @@
 (def schema
   {:user/id :uuid
    :user [:map {:closed true}
-          [:xt/id                     :user/id]
-          [:user/email                :string]
-          [:user/last-nane            string?]
-          [:user/first-name           string?]
-          [:user/rooms {:optional true} [:vector :room/id]]
+          [:xt/id                                     :user/id]
+          [:user/email                                :string]
+          [:user/last-nane  {:optional true}          string?]
+          [:user/first-name {:optional true}          string?]
+          [:user/rooms      {:optional true}         [:vector :room/id]]
           [:user/joined-at  inst?]]
 
 

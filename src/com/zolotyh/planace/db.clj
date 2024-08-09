@@ -18,6 +18,7 @@
                         :vote/title "New Vote"
                         :vote/type (:room/default-vote-type default-room-data)})
 
+
 (defn create-room [{:keys [session biff/db] :as ctx} room-data]
   (let [user (xt/entity db (:uid session))
         user-id (:uid session)
@@ -29,11 +30,12 @@
                           :xt/id room-id}
                          default-room-data
                          room-data)
-        vote-data (create-new-vote room-data (merge default-vote-data {:xt/id vote-id}))]
+        vote-data (create-new-vote room-data (merge default-vote-data {:xt/id vote-id}))
+        rooms (:user/rooms user)]
 
     (biff/submit-tx ctx [(merge {:db/doc-type :room} room-data)
                          (merge {:db/doc-type :vote} vote-data)
                          (merge user {:db/doc-type :user,
                                       :db/op :update,
-                                      :user/rooms (conj (:user/rooms user) room-id)})])
+                                      :user/rooms (if (vector? rooms)  (conj rooms room-id) [room-id])})])
     {:uuid room-id}))

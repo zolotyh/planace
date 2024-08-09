@@ -68,7 +68,7 @@
                      :image "https://clojure.org/images/clojure-logo-120b.png"})
        (update :base/head (fn [head]
                             (concat [[:link {:rel "stylesheet" :href (css-path)}]
-                                     [:script {:src (js-path "/js/htmx.min.js")}]
+                                     [:script {:src (js-path "/js/htmx.js")}]
                                      [:script {:src (js-path "/js/ws.js")}]
                                      [:script {:src (js-path "/js/main.js")}]
                                      [:script {:src (js-path "/js/_hyperscript.min.js")}]
@@ -81,7 +81,7 @@
 (defn page [ctx & body]
   (base
    ctx
-   [:div
+   [:div#root.sample-transition
     (when (bound? #'csrf/*anti-forgery-token*)
       {:hx-headers (cheshire/generate-string
                     {:x-csrf-token csrf/*anti-forgery-token*})})
