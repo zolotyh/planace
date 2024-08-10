@@ -2,10 +2,38 @@
   (:require
    [cheshire.core :refer [generate-string]]
    [com.biffweb :as biff]
-   [com.zolotyh.planace.db :refer [create-room q-by-ids]]
+   [com.zolotyh.planace.db :refer [create-room q-by-ids update-room]]
    [com.zolotyh.planace.middleware :as mid]
    [com.zolotyh.planace.ui :as ui]
    [xtdb.api :as xt]))
+
+
+
+(defn header [room]
+  [:.header#header
+   [:h1.text-xl (str "room name is " (:room/title room))]
+   [:div.py-2
+    [:a.inline-block.bg-slate-900.px-5.py-3.mt-5.mb-10 {:href "/app/room/form" :hx-get (str "/app/room/form/" (:xt/id room)) :hx-swap "innerHTML" :hx-target "#header"} "update room name"]]])
+
+(defn on-room-update [{:keys [params, biff/db path-params] :as ctx}]
+  (let [room (xt/entity db (parse-uuid (:room-id path-params)))
+        updated-room (assoc-in room [:room/title] (:title params))]
+    (update-room ctx updated-room)
+    (header updated-room)))
+
+(defn room-change-name-form [{:keys [path-params]}]
+  (biff/form {:hx-swap "innerHTML transition:true"
+              :hx-target "#header"
+              :hx-post (str
+                        "/app/room/update/"
+                        (:room-id path-params))
+              :hx-indicator "#spinner"
+              :class "col-span-12 rounded-sm border text-white border-stroke px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8 text-slate-900"}
+             [:label.block {:for "room"} "Room name"
+              [:.h-1]
+              [:.flex [:input.text-slate-900.w-full#room {:type "text", :name "title", :value ""}]
+               [:.w-3] [:button {:type "submit" :class "w-full cursor-pointer rounded-lg border border-primary bg-slate-900 p-4 font-medium text-white transition hover:bg-opacity-90"} "Create"]]]
+             [:div#spinner.htmx-indicator "loading"]))
 
 (defn room-create-form []
   (biff/form {:hx-swap "innerHTML transition:true"
@@ -35,11 +63,10 @@
   (let [room (create-room ctx {:room/title (:title params)})
         redirect-path (str "http://localhost:8080/app/room/view/" (:uuid room))]
     {:status 200
-     :headers {"HX-Location" (generate-string {:path redirect-path :swap "innerHTML swap:0.3s transition:true" :targer "#root"})
-               "HX-Push-Url" "true"
-               "HX-Reswap" "innerHTML swap:1s settle:1s"
+     :headers {"HX-Location" (generate-string {:path redirect-path :swap "innerHTML swap:0.1s settle:0.3s transition:true" :targer "#root"})
                ; "hx-location" redirect-path
                "location" redirect-path}}))
+
 
 
 
@@ -59,7 +86,7 @@
     (ui/page ctx
              [:<>
               (ui/main-layout
-               {:header "header"
+               {:header (header room)
                 :footer "footer"
                 :right-sidebar "right-sidebar"
                 :profile "profile"
@@ -68,5 +95,7 @@
 (def module {:routes ["/app" {:middleware [mid/wrap-signed-in mid/i18n]}
                       ["" {:get main-page}]
                       ["/room"
-                       ["/create" {:post on-room-create :conflicting true}]
+                       ["/create" {:post on-room-create}]
+                       ["/update/:room-id" {:post on-room-update}]
+                       ["/form/:room-id" {:get room-change-name-form}]
                        ["/view/:room-id" {:get room-page}]]]})

@@ -35,11 +35,11 @@
 
 (defn main-layout [{:keys [header right-sidebar main footer profile]}]
   [:div {:class "wrapper px-5 py-5 h-screen w-screen bg-green"}
-   [:div {:class "header bg-slate-900 text-white"} header]
-   [:div {:class "profile bg-slate-900 text-white"} profile]
-   [:div {:class "main bg-slate-900 text-white"} main]
-   [:div {:class "right-sidebar bg-slate-900 text-white"} right-sidebar]
-   [:div {:class "footer bg-slate-900 text-white"} footer]])
+   [:div {:class "header  text-white"} header]
+   [:div {:class "profile  text-white"} profile]
+   [:div {:class "main  text-white"} main]
+   [:div {:class "right-sidebar  text-white"} right-sidebar]
+   [:div {:class "footer  text-white"} footer]])
 
 
 (defn css-path []

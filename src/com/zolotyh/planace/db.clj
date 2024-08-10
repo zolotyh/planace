@@ -19,6 +19,9 @@
                         :vote/type (:room/default-vote-type default-room-data)})
 
 
+(defn update-room [ctx room]
+  (biff/submit-tx ctx [(merge room {:db/doc-type :room :db/op :update})]))
+
 (defn create-room [{:keys [session biff/db] :as ctx} room-data]
   (let [user (xt/entity db (:uid session))
         user-id (:uid session)
