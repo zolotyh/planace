@@ -7,6 +7,43 @@
             [ring.util.response :as ring-response]
             [rum.core :as rum]))
 
+; /* Ellipse 1 */
+;
+; position: absolute;
+; width: 51px;
+; height: 51px;
+; left: 27px;
+; top: 31px;
+;
+; background: #B6433C;
+; box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+
+(defn logo []
+  [:div {:class "
+         bg-[url('/img/noise.svg')]
+         bg-brand-500
+         w-[50px]
+         h-[50px]
+         shadow-logoOuter
+         rounded-full
+         relative
+         shadow-xl
+"}
+   [:div {:class
+          "bg-brand-500 
+         bg-[url('/img/noise.svg')]
+          w-[38px]
+          h-[38px]
+          shadow-logoInner
+          rounded-full 
+          absolute 
+          left-[50%] 
+          top-[50%] 
+          translate-x-[-50%] 
+          translate-y-[-50%] "}]])
+
+
 
 (defn center [a1 a2]
   (let [{class :class :or {class ""}} a1
@@ -34,7 +71,7 @@
     (map vote-result-item (range 10))]])
 
 (defn main-layout [{:keys [header right-sidebar main footer profile]}]
-  [:div {:class "wrapper px-5 py-5 h-screen w-screen bg-green"}
+  [:div {:class "wrapper px-5 py-5 h-screen w-screen bg-green font-body bg-[url('/img/noise.svg')]"}
    [:div {:class "header  text-white"} header]
    [:div {:class "profile  text-white"} profile]
    [:div {:class "main  text-white"} main]

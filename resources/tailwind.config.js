@@ -31,14 +31,23 @@ module.exports = {
       },
       darkgreen: "#103128",
       red: "#B6433C",
+      brand: {
+        500: "#B6433C"
+      },
       originalRed: colors.red,
-      yellow: "#EEE758",
+      yellow: {
+        500: "#EEE758"
+      },
       white: "#ffffff",
       gray: "#F5F5F5",
       black: "#2C363F",
       slate: colors.slate,
     },
     extend: {
+      boxShadow: {
+        'logoInner': 'inset 0px 0px 2px 2px rgba(0, 0, 0, 0.25)',
+        'logoOuter': '0px 4px 4px rgba(0, 0, 0, 0.25)'
+      },
       aspectRatio: {
         card: "98 / 136",
       },

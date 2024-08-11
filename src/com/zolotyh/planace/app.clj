@@ -7,33 +7,52 @@
    [com.zolotyh.planace.ui :as ui]
    [xtdb.api :as xt]))
 
+(defn room-edit-button [room]
+  [:div.js-title
+   [:span (:room/title room)]
+   [:a {:class "inline-block ml-1 mb-1"
+        :hx-target "closest .js-title"
+        :hx-swap "innerHTML"
+        :hx-get  (str "/app/room/form/" (:xt/id room))
+        :href (str "/app/room/form/" (:xt/id room))}
+    [:img {:src "/img/edit.svg"}]]])
+
+(defn room-name [room]
+  [:h3.ml-2.text-2xl.leading-6
+   [:span.js-title
+    (room-edit-button room)
+    [:small.block [:a.text-yellow-500.font-size.text-base {:href "/"} "Planace.ru"]]]])
 
 
 (defn header [room]
-  [:.header#header
-   [:h1.text-xl (str "room name is " (:room/title room))]
-   [:div.py-2
-    [:a.inline-block.bg-slate-900.px-5.py-3.mt-5.mb-10 {:href "/app/room/form" :hx-get (str "/app/room/form/" (:xt/id room)) :hx-swap "innerHTML" :hx-target "#header"} "update room name"]]])
+  [:.header#header.flex
+   (ui/logo)
+   (room-name room)])
 
 (defn on-room-update [{:keys [params, biff/db path-params] :as ctx}]
   (let [room (xt/entity db (parse-uuid (:room-id path-params)))
         updated-room (assoc-in room [:room/title] (:title params))]
     (update-room ctx updated-room)
-    (header updated-room)))
+    (room-edit-button updated-room)))
 
-(defn room-change-name-form [{:keys [path-params]}]
-  (biff/form {:hx-swap "innerHTML transition:true"
-              :hx-target "#header"
-              :hx-post (str
-                        "/app/room/update/"
-                        (:room-id path-params))
-              :hx-indicator "#spinner"
-              :class "col-span-12 rounded-sm border text-white border-stroke px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8 text-slate-900"}
-             [:label.block {:for "room"} "Room name"
-              [:.h-1]
-              [:.flex [:input.text-slate-900.w-full#room {:type "text", :name "title", :value ""}]
-               [:.w-3] [:button {:type "submit" :class "w-full cursor-pointer rounded-lg border border-primary bg-slate-900 p-4 font-medium text-white transition hover:bg-opacity-90"} "Create"]]]
-             [:div#spinner.htmx-indicator "loading"]))
+(defn room-change-name-form [{:keys [path-params biff/db]}]
+  (let [room (xt/entity db
+                        (parse-uuid (:room-id path-params)))]
+    (biff/form {:hx-swap "innerHTML transition:true"
+                :hx-target "closest .js-title"
+                :hx-post (str "/app/room/update/" (:xt/id room))
+                :hx-indicator "#spinner"
+                :class "pb-[1.5px] "}
+
+               [:.flex
+                [:input
+                 {:type "text"
+                  :name "title"
+                  :autofocus "true"
+                  :value (:room/title room)
+                  :class "text-white bg-opacity-0 bg-green py-0 px-1 border-white-100"}
+                 [:button {:type "submit" :class "w-full cursor-pointer px-5 text-sm rounded ml-3  bg-brand-500 font-xs"} "Update"]
+                 [:div#spinner.htmx-indicator "loading"]]])))
 
 (defn room-create-form []
   (biff/form {:hx-swap "innerHTML transition:true"
