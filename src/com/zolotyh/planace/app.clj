@@ -1,9 +1,11 @@
 (ns com.zolotyh.planace.app
   (:require
+   [cheshire.core :as cheshire]
    [cheshire.core :refer [generate-string]]
    [com.biffweb :as biff]
    [com.zolotyh.planace.db :refer [create-room q-by-ids update-room]]
    [com.zolotyh.planace.middleware :as mid]
+   [com.zolotyh.planace.sequences :as s]
    [com.zolotyh.planace.ui :as ui]
    [xtdb.api :as xt]))
 
@@ -16,6 +18,39 @@
         :hx-get  (str "/app/room/form/" (:xt/id room))
         :href (str "/app/room/form/" (:xt/id room))}
     [:img {:src "/img/edit.svg"}]]])
+
+
+(defn vote-card [{:keys [path-params]} [k v]]
+  [:div {:hx-post (str "/app/room/vote/" (:room-id path-params))
+         :hx-swap "none"
+         :_ "on click remove .{'!-mt-24'} .bg-red .text-white from .js-vote then toggle .{'!-mt-24'} .bg-red .text-white on me"
+         :hx-vals (cheshire/generate-string {:key k :value v})
+         :class "
+          js-vote
+          text-3xl
+          font-georgia
+          w-20
+          h-28
+          bg-white
+          text-slate-900
+          flex
+          ml-4
+          rounded-lg
+          shadow-md
+          border-none
+          items-center
+          justify-center
+          -mt-16
+          uppercase
+          cursor-pointer"} k])
+
+(defn vote-list-panel [ctx type]
+  [:div.flex.-ml-4.-mt-18.
+   (map (partial vote-card ctx) (type s/sequences))])
+
+
+(defn footer [ctx]
+  (vote-list-panel ctx :t-shirts))
 
 (defn room-name [room]
   [:h3.ml-2.text-2xl.leading-6
@@ -106,10 +141,14 @@
              [:<>
               (ui/main-layout
                {:header (header room)
-                :footer "footer"
+                :footer (footer ctx)
                 :right-sidebar "right-sidebar"
                 :profile "profile"
                 :main [:div (:room/title room)]})])))
+
+(defn on-vote [ctx]
+  {:status 200})
+
 
 (def module {:routes ["/app" {:middleware [mid/wrap-signed-in mid/i18n]}
                       ["" {:get main-page}]
@@ -117,4 +156,5 @@
                        ["/create" {:post on-room-create}]
                        ["/update/:room-id" {:post on-room-update}]
                        ["/form/:room-id" {:get room-change-name-form}]
-                       ["/view/:room-id" {:get room-page}]]]})
+                       ["/view/:room-id" {:get room-page}]
+                       ["/vote/:room-id" {:post on-vote}]]]})

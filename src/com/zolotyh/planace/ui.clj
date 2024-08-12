@@ -71,12 +71,12 @@
     (map vote-result-item (range 10))]])
 
 (defn main-layout [{:keys [header right-sidebar main footer profile]}]
-  [:div {:class "wrapper px-5 py-5 h-screen w-screen bg-green font-body bg-[url('/img/noise.svg')]"}
-   [:div {:class "header  text-white"} header]
-   [:div {:class "profile  text-white"} profile]
-   [:div {:class "main  text-white"} main]
+  [:div {:class "wrapper h-screen w-screen bg-green font-body bg-[url('/img/noise.svg')]"}
+   [:div {:class "header px-10 py-10  text-white"} header]
+   [:div {:class "profile pt-10 pr-10  text-white"} profile]
+   [:div {:class "main pl-10  text-white"} main]
    [:div {:class "right-sidebar  text-white"} right-sidebar]
-   [:div {:class "footer  text-white"} footer]])
+   [:div {:class "footer px-10 py-10  bg-green-900 text-white"} footer]])
 
 
 (defn css-path []
