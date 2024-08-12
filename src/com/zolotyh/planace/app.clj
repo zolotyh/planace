@@ -6,6 +6,8 @@
    [com.zolotyh.planace.middleware :as mid]
    [com.zolotyh.planace.sequences :as s]
    [com.zolotyh.planace.ui :as ui]
+   [ring.adapter.jetty9 :as jetty9]
+   [rum.core :as rum]
    [xtdb.api :as xt]))
 
 (defn room-edit-button [room]
@@ -22,7 +24,7 @@
 (defn vote-card [{:keys [path-params]} [k v]]
   [:div {:hx-post (str "/app/room/vote/" (:room-id path-params))
          :hx-swap "none"
-         :_ "on click remove .-translate-y-4 .bg-red .text-white from .js-vote then toggle .-translate-y-4 .bg-red .text-white on me"
+         :_ "on click remove .-translate-y-4 .{'!bg-red'} .text-white from .js-vote then toggle .-translate-y-4 .{'!bg-red'} .text-white on me"
          :hx-vals (cheshire/generate-string {:key k :value v})
          :class "
           js-vote
@@ -78,16 +80,14 @@
     (biff/form {:hx-swap "outerHTML transition:true"
                 :hx-target "closest .js-title"
                 :hx-post (str "/app/room/update/" (:xt/id room))
-                :hx-indicator "#spinner"
-                :class "pb-[1.5px] "}
-
+                :hx-indicator "#spinner"}
                [:.flex
                 [:input
                  {:type "text"
                   :name "title"
                   :autofocus "true"
                   :value (:room/title room)
-                  :class "text-white bg-opacity-0 bg-green py-0 px-1 border-white-100"
+                  :class "text-white bg-opacity-0 bg-green py-0 px-1 border-white-100 mb-[-2px] "
                   :_ "on load js(me) me.select() end"}
                  [:button {:type "submit" :class "w-full cursor-pointer px-5 text-sm rounded ml-3 bg-brand-500 font-xs"} "Update"]
                  [:div#spinner.htmx-indicator "loading"]]])))
@@ -147,10 +147,35 @@
                 :footer (footer ctx)
                 :right-sidebar "right-sidebar"
                 :profile "profile"
-                :main [:div (:room/title room)]})])))
+                :main [:div {:id "room", :hx-ext "ws", :ws-connect (str "/app/room/ws/" (:xt/id room))} (:room/title room)]})])))
 
-(defn on-vote [ctx]
-  {:status 200})
+(defn on-vote [ctx])
+:tatus 200
+
+(defn ws-vote-handler
+  [{:keys [com.zolotyh.planace/votes path-params]}]
+  (let [room-id (:room-id path-params)]
+    {:status 101,
+     :headers {"upgrade" "websocket", "connection" "upgrade"},
+     :ws {:on-connect (fn [ws] (swap! votes update-in [room-id] conj ws)),
+          :on-close (fn [ws] (swap! votes update-in [room-id] dissoc ws))}}))
+
+
+(defn render-vote [v]
+  [:div (str v)])
+
+
+(defn notify-room-connections
+  [{:keys [com.zolotyh.planace/votes]} tx]
+  (doseq [[op & args] (::xt/tx-ops tx)
+          :when (= op ::xt/put)
+          :let [[vote] args]
+          :when (or
+                 (contains? vote :vote/title)
+                 (contains? vote :room/title))
+          :let [html (rum/render-static-markup (render-vote vote))]
+          ws (get-in @votes [(str (:vote/room vote))])]
+    (jetty9/send! ws html)))
 
 
 (def module {:routes ["/app" {:middleware [mid/wrap-signed-in mid/i18n]}
@@ -160,4 +185,6 @@
                        ["/update/:room-id" {:post on-room-update}]
                        ["/form/:room-id" {:get room-change-name-form}]
                        ["/view/:room-id" {:get room-page}]
-                       ["/vote/:room-id" {:post on-vote}]]]})
+                       ["/vote/:room-id" {:post on-vote}]
+                       ["/ws/:room-id" {:get ws-vote-handler}]]]
+             :on-tx notify-room-connections})
