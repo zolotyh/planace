@@ -23,10 +23,12 @@
 (defn vote-card [{:keys [path-params]} [k v]]
   [:div {:hx-post (str "/app/room/vote/" (:room-id path-params))
          :hx-swap "none"
-         :_ "on click remove .{'!-mt-24'} .bg-red .text-white from .js-vote then toggle .{'!-mt-24'} .bg-red .text-white on me"
+         :_ "on click remove .-translate-y-4 .bg-red .text-white from .js-vote then toggle .-translate-y-4 .bg-red .text-white on me"
          :hx-vals (cheshire/generate-string {:key k :value v})
          :class "
           js-vote
+          transition-transform
+          ease-in-out
           text-3xl
           font-georgia
           w-20
