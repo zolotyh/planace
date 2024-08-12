@@ -28,6 +28,7 @@
          :class "
           js-vote
           transition-transform
+          duration-300
           ease-in-out
           text-3xl
           font-georgia
