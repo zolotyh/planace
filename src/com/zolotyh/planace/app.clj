@@ -1,7 +1,6 @@
 (ns com.zolotyh.planace.app
   (:require
    [cheshire.core :as cheshire]
-   [cheshire.core :refer [generate-string]]
    [com.biffweb :as biff]
    [com.zolotyh.planace.db :refer [create-room q-by-ids update-room]]
    [com.zolotyh.planace.middleware :as mid]
@@ -76,7 +75,7 @@
 (defn room-change-name-form [{:keys [path-params biff/db]}]
   (let [room (xt/entity db
                         (parse-uuid (:room-id path-params)))]
-    (biff/form {:hx-swap "innerHTML transition:true"
+    (biff/form {:hx-swap "outerHTML transition:true"
                 :hx-target "closest .js-title"
                 :hx-post (str "/app/room/update/" (:xt/id room))
                 :hx-indicator "#spinner"
@@ -88,8 +87,9 @@
                   :name "title"
                   :autofocus "true"
                   :value (:room/title room)
-                  :class "text-white bg-opacity-0 bg-green py-0 px-1 border-white-100"}
-                 [:button {:type "submit" :class "w-full cursor-pointer px-5 text-sm rounded ml-3  bg-brand-500 font-xs"} "Update"]
+                  :class "text-white bg-opacity-0 bg-green py-0 px-1 border-white-100"
+                  :_ "on load js(me) me.select() end"}
+                 [:button {:type "submit" :class "w-full cursor-pointer px-5 text-sm rounded ml-3 bg-brand-500 font-xs"} "Update"]
                  [:div#spinner.htmx-indicator "loading"]]])))
 
 (defn room-create-form []
@@ -120,7 +120,7 @@
   (let [room (create-room ctx {:room/title (:title params)})
         redirect-path (str "http://localhost:8080/app/room/view/" (:uuid room))]
     {:status 200
-     :headers {"HX-Location" (generate-string {:path redirect-path :swap "innerHTML swap:0.1s settle:0.3s transition:true" :targer "#root"})
+     :headers {"HX-Location" (cheshire/generate-string {:path redirect-path :swap "innerHTML swap:0.1s settle:0.3s transition:true" :targer "#root"})
                ; "hx-location" redirect-path
                "location" redirect-path}}))
 
