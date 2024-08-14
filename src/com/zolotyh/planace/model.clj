@@ -2,12 +2,12 @@
   (:require
    [com.rpl.specter :as s]))
 
-(defn add-user-vote [voting user-id value]
+(defn add-user-vote [old-vote user-id value]
   (s/setval
    [:vote/result
     #_{:clj-kondo/ignore [:unresolved-var]}
     s/ALL
-    (fn [v] (= user-id (:user v)))] {:user user-id :vote value} voting))
+    (fn [v] (= user-id (:user v)))] {:user user-id :vote value} old-vote))
 
 (defn create-new-vote [room vote]
   (merge

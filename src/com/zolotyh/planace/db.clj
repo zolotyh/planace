@@ -1,6 +1,7 @@
 (ns com.zolotyh.planace.db
   (:require
    [com.biffweb :as biff]
+   [com.zolotyh.planace.model :as model]
    [com.zolotyh.planace.model :refer [create-new-vote]]
    [xtdb.api :as xt]))
 
@@ -42,3 +43,9 @@
                                       :db/op :update,
                                       :user/rooms (if (vector? rooms)  (conj rooms room-id) [room-id])})])
     {:uuid room-id}))
+
+(defn vote [ctx vote user-id value]
+  (let [new-vote (model/add-user-vote vote user-id value)]
+    (biff/submit-tx ctx [(merge {:db/doc-type :vote :db/op :update} new-vote)])))
+
+

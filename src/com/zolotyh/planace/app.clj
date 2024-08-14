@@ -2,13 +2,16 @@
   (:require
    [cheshire.core :as cheshire]
    [com.biffweb :as biff]
-   [com.zolotyh.planace.db :refer [create-room q-by-ids update-room]]
+   [com.zolotyh.planace.db :as db]
    [com.zolotyh.planace.middleware :as mid]
    [com.zolotyh.planace.sequences :as s]
    [com.zolotyh.planace.ui :as ui]
    [ring.adapter.jetty9 :as jetty9]
    [rum.core :as rum]
    [xtdb.api :as xt]))
+
+(defn render-vote-result [v]
+  [:div#vote {:hx-swap-oob "outerHTML"} (str v)])
 
 (defn room-edit-button [room]
   [:div.js-title
@@ -21,11 +24,11 @@
     [:img {:src "/img/edit.svg"}]]])
 
 
-(defn vote-card [{:keys [path-params]} [k v]]
+(defn vote-card [{:keys [path-params]} room [k v]]
   [:div {:hx-post (str "/app/room/vote/" (:room-id path-params))
          :hx-swap "none"
          :_ "on click remove .-translate-y-4 .{'!bg-red'} .text-white from .js-vote then toggle .-translate-y-4 .{'!bg-red'} .text-white on me"
-         :hx-vals (cheshire/generate-string {:key k :value v})
+         :hx-vals (cheshire/generate-string {:key k :value v :vote (:room/current-vote room)})
          :class "
           js-vote
           transition-transform
@@ -48,12 +51,13 @@
           uppercase
           cursor-pointer"} k])
 
-(defn vote-list-panel [ctx type]
-  [:div.flex.-ml-4.-mt-18.
-   (map (partial vote-card ctx) (type s/sequences))])
+(defn vote-list-panel [{:keys [biff/db path-params] :as ctx} type]
+  (let [room (xt/entity db (parse-uuid (:room-id path-params)))]
+    [:div.flex.-ml-4.-mt-18.
+     (map (partial vote-card ctx room) (type s/sequences))]))
 
 
-(defn footer [ctx]
+(defn footer [{:keys [biff/db] :as ctx}]
   (vote-list-panel ctx :t-shirts))
 
 (defn room-name [room]
@@ -71,7 +75,7 @@
 (defn on-room-update [{:keys [params, biff/db path-params] :as ctx}]
   (let [room (xt/entity db (parse-uuid (:room-id path-params)))
         updated-room (assoc-in room [:room/title] (:title params))]
-    (update-room ctx updated-room)
+    (db/update-room ctx updated-room)
     (room-edit-button updated-room)))
 
 (defn room-change-name-form [{:keys [path-params biff/db]}]
@@ -117,7 +121,7 @@
    [:ui {:class "max-h-[40vh] overflow-y-auto"} (map room rooms)]])
 
 (defn on-room-create [{:keys [params] :as ctx}]
-  (let [room (create-room ctx {:room/title (:title params)})
+  (let [room (db/create-room ctx {:room/title (:title params)})
         redirect-path (str "http://localhost:8080/app/room/view/" (:uuid room))]
     {:status 200
      :headers {"HX-Location" (cheshire/generate-string {:path redirect-path :swap "innerHTML swap:0.1s settle:0.3s transition:true" :targer "#root"})
@@ -130,7 +134,7 @@
 (defn main-page [{:keys [session biff/db] :as ctx}]
   (let [uid (:uid session)
         user (xt/entity db uid)
-        rooms (q-by-ids ctx (:user/rooms user))]
+        rooms (db/q-by-ids ctx (:user/rooms user))]
     (ui/page ctx (ui/center {:class "h-screen bg-green text-white flex-col"}
                             [:<>
                              (room-list rooms)
@@ -139,7 +143,8 @@
 
 
 (defn room-page [{:keys [path-params biff/db] :as ctx}]
-  (let [room (xt/entity db (parse-uuid (:room-id path-params)))]
+  (let [room (xt/entity db (parse-uuid (:room-id path-params)))
+        current-vote (xt/entity db (:room/current-vote room))]
     (ui/page ctx
              [:<>
               (ui/main-layout
@@ -147,10 +152,14 @@
                 :footer (footer ctx)
                 :right-sidebar "right-sidebar"
                 :profile "profile"
-                :main [:div {:id "room", :hx-ext "ws", :ws-connect (str "/app/room/ws/" (:xt/id room))} (:room/title room)]})])))
+                :main [:div {:id "vote", :hx-ext "ws", :ws-connect (str "/app/room/ws/" (:xt/id room))} (:room/title room)]})])))
 
-(defn on-vote [ctx])
-:tatus 200
+(defn on-vote [{:keys [params path-params biff/db session] :as ctx}]
+  (let [vote-id (parse-uuid (:vote params))
+        vote (xt/entity db vote-id)]
+    (db/vote ctx vote (:uid session) (:value params)))
+  {:status 200})
+
 
 (defn ws-vote-handler
   [{:keys [com.zolotyh.planace/votes path-params]}]
@@ -160,11 +169,6 @@
      :ws {:on-connect (fn [ws] (swap! votes update-in [room-id] conj ws)),
           :on-close (fn [ws] (swap! votes update-in [room-id] dissoc ws))}}))
 
-
-(defn render-vote [v]
-  [:div (str v)])
-
-
 (defn notify-room-connections
   [{:keys [com.zolotyh.planace/votes]} tx]
   (doseq [[op & args] (::xt/tx-ops tx)
@@ -173,7 +177,7 @@
           :when (or
                  (contains? vote :vote/title)
                  (contains? vote :room/title))
-          :let [html (rum/render-static-markup (render-vote vote))]
+          :let [html (rum/render-static-markup (render-vote-result vote))]
           ws (get-in @votes [(str (:vote/room vote))])]
     (jetty9/send! ws html)))
 

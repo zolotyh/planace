@@ -62,7 +62,8 @@
    :biff.middleware/on-error #'ui/on-error
    :biff.xtdb/tx-fns biff/tx-fns
    :com.zolotyh.planace/chat-clients (atom #{})
-   :com.zolotyh.planace/votes (atom {})})
+   :com.zolotyh.planace/votes (atom {})
+   :com.zolotyh.planace/context (atom {})})
 
 (defonce system (atom {}))
 
