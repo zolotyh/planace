@@ -171,8 +171,6 @@
           :on-close (fn [ws] (swap! votes update-in [room-id user-id] dissoc ws))}}))
 
 
-(flatten [[1]])
-
 (defn notify-room-connections
   [{:keys [com.zolotyh.planace/votes]} tx]
   (doseq [[op & args] (::xt/tx-ops tx)
