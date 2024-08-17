@@ -18,4 +18,3 @@
      #(conj %1 {:user %2})
      []
      (:room/members room))}))
-

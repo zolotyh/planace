@@ -162,12 +162,16 @@
 
 
 (defn ws-vote-handler
-  [{:keys [com.zolotyh.planace/votes path-params]}]
-  (let [room-id (:room-id path-params)]
+  [{:keys [com.zolotyh.planace/votes path-params session]}]
+  (let [user-id (:uid session)
+        room-id (:room-id path-params)]
     {:status 101,
      :headers {"upgrade" "websocket", "connection" "upgrade"},
-     :ws {:on-connect (fn [ws] (swap! votes update-in [room-id] conj ws)),
-          :on-close (fn [ws] (swap! votes update-in [room-id] dissoc ws))}}))
+     :ws {:on-connect (fn [ws] (swap! votes update-in [room-id user-id] conj ws)),
+          :on-close (fn [ws] (swap! votes update-in [room-id user-id] dissoc ws))}}))
+
+
+(flatten [[1]])
 
 (defn notify-room-connections
   [{:keys [com.zolotyh.planace/votes]} tx]
@@ -178,7 +182,10 @@
                  (contains? vote :vote/title)
                  (contains? vote :room/title))
           :let [html (rum/render-static-markup (render-vote-result vote))]
-          ws (get-in @votes [(str (:vote/room vote))])]
+          ws (flatten
+              (vals
+               (get-in @votes [(str (:vote/room vote))])))]
+    (biff/pprint (str ws))
     (jetty9/send! ws html)))
 
 
