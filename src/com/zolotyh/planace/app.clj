@@ -185,7 +185,6 @@
           ws (flatten
               (vals
                (get-in @votes [(str (:vote/room vote))])))]
-    (biff/pprint (str ws))
     (jetty9/send! ws html)))
 
 
