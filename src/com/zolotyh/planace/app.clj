@@ -10,14 +10,20 @@
    [rum.core :as rum]
    [xtdb.api :as xt]))
 
-(defn render-vote-result [votes vote]
-  (let [room-id (:vote/room vote)]
+(defn result-of-user [user]
+  [:div (str user)])
+
+(defn render-vote-result [db votes vote]
+  (let [vote-id (:xt/id vote)
+        room-id (:vote/room vote)
+        user-id-list (keys (get @votes (str
+                                        room-id)))
+        users (db/q-by-ids db user-id-list)]
+
     [:div#vote
      [:button.bg-slate-900.rounded.px-3.py-1 {:hx-swap "none" :hx-post (str "/app/room/vote/toggle/" (:xt/id vote))} (if (:vote/open vote) "Close" "Open")]
-     [:div (str "room " room-id (get-in @votes [room-id]))]
-     [:div (str
-            (keys
-             (get @votes (str room-id))))]]))
+     (map result-of-user users)
+     [:div (str "user id list" users)]]))
 
 (defn room-edit-button [room]
   [:div.js-title
@@ -158,7 +164,7 @@
                 :footer (footer ctx)
                 :right-sidebar "right-sidebar"
                 :profile "profile"
-                :main [:div {:hx-ext "ws", :ws-connect (str "/app/room/ws/" (:xt/id room))} (render-vote-result votes current-vote)]})])))
+                :main [:div {:hx-ext "ws", :ws-connect (str "/app/room/ws/" (:xt/id room))} (render-vote-result ctx votes current-vote)]})])))
 
 (defn on-vote [{:keys [params path-params biff/db session] :as ctx}]
   (let [vote-id (parse-uuid (:vote params))
@@ -177,14 +183,14 @@
           :on-close   (fn [ws] (swap! votes update-in [room-id user-id] disj ws))}}))
 
 (defn notify-room-connections
-  [{:keys [com.zolotyh.planace/votes]} tx]
+  [{:keys [com.zolotyh.planace/votes biff/db] :as ctx} tx]
   (doseq [[op & args] (::xt/tx-ops tx)
           :when (= op ::xt/put)
           :let [[vote] args]
           :when (or
                  (contains? vote :vote/title)
                  (contains? vote :room/title))
-          :let [html (rum/render-static-markup (render-vote-result votes vote))]
+          :let [html (rum/render-static-markup (render-vote-result ctx votes vote))]
           ws (flatten
               (vals
                (get-in @votes [(str (:vote/room vote))])))]
