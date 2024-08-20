@@ -10,10 +10,14 @@
    [rum.core :as rum]
    [xtdb.api :as xt]))
 
-(defn render-vote-result [vote]
-  [:<>
-   [:button.bg-slate-900.rounded.px-3.py-1 {:hx-post (str "/app/room/vote/toggle/" (:xt/id vote))} (if (:vote/open vote) "Close" "Open")]
-   [:div#vote {:hx-swap-oob "outerHTML"} (str vote)]])
+(defn render-vote-result [votes vote]
+  (let [room-id (:vote/room vote)]
+    [:div#vote
+     [:button.bg-slate-900.rounded.px-3.py-1 {:hx-swap "none" :hx-post (str "/app/room/vote/toggle/" (:xt/id vote))} (if (:vote/open vote) "Close" "Open")]
+     [:div (str "room " room-id (get-in @votes [room-id]))]
+     [:div (str
+            (keys
+             (get @votes (str room-id))))]]))
 
 (defn room-edit-button [room]
   [:div.js-title
@@ -144,7 +148,7 @@
                              [:div "lorem lorem lorem 2"]]))))
 
 
-(defn room-page [{:keys [path-params biff/db] :as ctx}]
+(defn room-page [{:keys [path-params biff/db com.zolotyh.planace/votes] :as ctx}]
   (let [room (xt/entity db (parse-uuid (:room-id path-params)))
         current-vote (xt/entity db (:room/current-vote room))]
     (ui/page ctx
@@ -154,7 +158,7 @@
                 :footer (footer ctx)
                 :right-sidebar "right-sidebar"
                 :profile "profile"
-                :main [:div {:id "vote", :hx-ext "ws", :ws-connect (str "/app/room/ws/" (:xt/id room))} (render-vote-result current-vote)]})])))
+                :main [:div {:hx-ext "ws", :ws-connect (str "/app/room/ws/" (:xt/id room))} (render-vote-result votes current-vote)]})])))
 
 (defn on-vote [{:keys [params path-params biff/db session] :as ctx}]
   (let [vote-id (parse-uuid (:vote params))
@@ -169,10 +173,8 @@
         room-id (:room-id path-params)]
     {:status 101,
      :headers {"upgrade" "websocket", "connection" "upgrade"},
-     :ws {:on-connect (fn [ws] (swap! votes update-in [room-id user-id] conj ws)),
-          :on-close (fn [ws] (swap! votes update-in [room-id user-id] dissoc ws))}}))
-
-
+     :ws {:on-connect (fn [ws] (swap! votes update-in [room-id user-id] conj   ws)),
+          :on-close   (fn [ws] (swap! votes update-in [room-id user-id] disj ws))}}))
 
 (defn notify-room-connections
   [{:keys [com.zolotyh.planace/votes]} tx]
@@ -182,7 +184,7 @@
           :when (or
                  (contains? vote :vote/title)
                  (contains? vote :room/title))
-          :let [html (rum/render-static-markup (render-vote-result vote))]
+          :let [html (rum/render-static-markup (render-vote-result votes vote))]
           ws (flatten
               (vals
                (get-in @votes [(str (:vote/room vote))])))]
@@ -190,8 +192,7 @@
 
 (defn- on-vote-toggle [{:keys [path-params biff/db] :as ctx}]
   (let [vote (xt/entity db (parse-uuid (:vote-id path-params)))]
-    (biff/pprint (assoc-in vote [:vote/open] (not (:vote/open vote))))
-    (biff/submit-tx ctx [(merge {:db/op :update :db/doc-type :vote} (assoc-in vote [:vote/open] (not (:vote/open vote))))])))
+    (biff/submit-tx ctx [(merge {:db/op :update :db/doc-type :vote} (update-in vote [:vote/open] not))])))
 
 
 
