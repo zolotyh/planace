@@ -1,47 +1,42 @@
-(ns com.zolotyh.planace.poker.ui)
+(ns com.zolotyh.planace.poker.ui
+  (:require
+   [com.zolotyh.planace.sequences :refer [sequences]]))
 
 
-(defn vote-result-item [_ctx value]
-  [:li (str "vote-result-item: " value)])
+(defn result-item [ctx, value]
+  [:div "result item"])
 
-(defn vote-result [{:keys [vote-result-items] :as ctx}]
-  [:ul
-   (map (partial vote-result-item ctx) vote-result-items)])
+(defn result [ctx]
+  (map (partial result-item ctx) (:results ctx)))
 
 
-(defn vote-panel-item [_ctx value]
-  [:div (str
-         "vote-panel-item" value)])
+(defn search [ctx]
+  [:div "search"])
 
-(defn vote-panel [{:keys [vote-panel-items] :as ctx}]
-  [:ul
-   (map (partial vote-panel-item ctx) vote-panel-items)])
+(defn task-item [ctx value]
+  [:div "task item"])
 
-(defn room-list-item [{:keys [] :as _ctx} value]
-  [:li
-   (str
-    "room-list-item "
-    value)])
-
-(defn room-search [{:keys [] :as _ctx}]
-  [:div "room-search"])
-
-(defn room-list [{:keys [room-list] :as ctx}]
+(defn task-switcher [ctx]
   [:div
-   [:div.room-search
-    (room-search ctx)]
-   [:ul.list
-    (map (partial room-list-item ctx) room-list)]])
-
-(defn room [{:keys [] :as ctx}]
-  [:div.room
-   (vote-result ctx)
-   (room-list ctx)
-   (vote-panel ctx)])
+   (search ctx)
+   (map (partial task-item ctx) (:tasks ctx))])
 
 
-(room {:room-list (range 3)
-       :vote-result-items (range 3)
-       :vote-panel-items (range 3)})
+(defn voting-panel-item [ctx [value]]
+  [:div (str "v-item" value)])
+
+(defn voting-panel [{:keys [sequence] :as ctx}]
+  [:div.voting-panel
+   (map (partial voting-panel-item ctx) sequence)])
 
 
+(defn poker-page [ctx]
+  [:<>
+   (result ctx)
+   (task-switcher ctx)
+   (voting-panel ctx)])
+
+
+(poker-page {:sequence (:fib sequences)
+             :tasks (range 1)
+             :results (range 1)})

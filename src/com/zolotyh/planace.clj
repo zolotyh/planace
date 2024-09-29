@@ -9,6 +9,7 @@
    [com.zolotyh.planace.home :as home]
    [com.zolotyh.planace.middleware :as mid]
    [com.zolotyh.planace.schema :as schema]
+   [com.zolotyh.planace.temp :as tmp]
    [com.zolotyh.planace.ui :as ui]
    [com.zolotyh.planace.worker :as worker]
    [malli.core :as malc]
@@ -21,6 +22,7 @@
 (def modules
   [app/module
    (biff/authentication-module {})
+   tmp/module
    home/module
    schema/module
    worker/module])

@@ -79,13 +79,13 @@
    [:div {:class "footer px-10 py-10  bg-green-900 text-white"} footer]])
 
 
-(defn css-path []
-  (if-some [last-modified (some-> (io/resource "public/css/main.css")
+(defn css-path [path]
+  (if-some [last-modified (some-> (io/resource (str "public/" path))
                                   ring-response/resource-data
                                   :last-modified
                                   (.getTime))]
-    (str "/css/main.css?t=" last-modified)
-    "/css/main.css"))
+    (str path "?t=" last-modified)
+    path))
 
 (defn js-path [path]
   (if-some [last-modified (some-> (io/resource (str "public" path))
@@ -104,7 +104,8 @@
                      :description (str settings/app-name " Description")
                      :image "https://clojure.org/images/clojure-logo-120b.png"})
        (update :base/head (fn [head]
-                            (concat [[:link {:rel "stylesheet" :href (css-path)}]
+                            (concat [[:link {:rel "stylesheet" :href (css-path "/css/main.css")}]
+                                     [:link {:rel "stylesheet" :href (css-path "/css/animate.css")}]
                                      [:script {:src (js-path "/js/htmx.js")}]
                                      [:script {:src (js-path "/js/ws.js")}]
                                      [:script {:src (js-path "/js/main.js")}]
@@ -118,7 +119,7 @@
 (defn page [ctx & body]
   (base
    ctx
-   [:div#root.sample-transition
+   [:div#root.sample-transition.h-screen.flex.items-center.justify-center
     (when (bound? #'csrf/*anti-forgery-token*)
       {:hx-headers (cheshire/generate-string
                     {:x-csrf-token csrf/*anti-forgery-token*})})

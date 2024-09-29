@@ -2,8 +2,8 @@
   (:require [clj-http.client :as http]
             [com.biffweb :as biff]
             [com.zolotyh.planace.middleware :as mid]
-            [com.zolotyh.planace.ui :as ui]
             [com.zolotyh.planace.settings :as settings]
+            [com.zolotyh.planace.ui :as ui]
             [rum.core :as rum]
             [xtdb.api :as xt]))
 
@@ -18,17 +18,18 @@
    (biff/form
     {:action "/auth/send-link"
      :id "signup"
+     :class "bg-slate-50 w-1/2 min-w-80 drop-shadow-2xl px-12 py-6 rounded-lg"
      :hidden {:on-error "/"}}
     (biff/recaptcha-callback "submitSignup" "signup")
-    [:h2.text-2xl.font-bold (str "Sign up for " settings/app-name)]
+    [:h2.text-2xl.font-light.uppercase.mb-6 (str "Sign up for " settings/app-name)]
     [:.h-3]
-    [:.flex
+    [:.flex.py-2
      [:input#email {:name "email"
                     :type "email"
                     :autocomplete "email"
                     :placeholder "Enter your email address"}]
      [:.w-3]
-     [:button.btn.g-recaptcha
+     [:button.btn.g-recaptcha.bg-slate-900.text-slate-50.px-10.py-2
       (merge (when site-key
                {:data-sitekey site-key
                 :data-callback "submitSignup"})
@@ -48,8 +49,7 @@
     [:.h-1]
     [:.text-sm "Already have an account? " [:a.link {:href "/signin"} "Sign in"] "."]
     [:.h-3]
-    biff/recaptcha-disclosure
-    email-disabled-notice)))
+    biff/recaptcha-disclosure)))
 
 (defn link-sent [{:keys [params] :as ctx}]
   (ui/page
@@ -73,10 +73,9 @@
      [:input#email {:name "email" :type "email"
                     :placeholder "Enter your email address"}]
      [:.w-3]
-     [:button.btn {:type "submit"}
+     [:button.btn.bg-slate-900.text-slate-50.px-10.py-2 {:type "submit"}
       "Sign in"]])
    (when-some [error (:error params)]
-     [:.h-1]
      [:.text-sm.text-red-600
       (case error
         "incorrect-email" "Incorrect email address. Try again."
@@ -88,17 +87,17 @@
    (biff/form
     {:action "/auth/send-code"
      :id "signin"
+     :class "bg-slate-50 w-1/2 min-w-80 drop-shadow-2xl px-12 py-6 rounded-lg"
      :hidden {:on-error "/signin"}}
     (biff/recaptcha-callback "submitSignin" "signin")
-    [:h2.text-2xl.font-bold "Sign in to " settings/app-name]
+    [:h2.text-2xl.font-light.uppercase.mb-6  "Sign in to " settings/app-name]
     [:.h-3]
     [:.flex
      [:input#email {:name "email"
                     :type "email"
                     :autocomplete "email"
                     :placeholder "Enter your email address"}]
-     [:.w-3]
-     [:button.btn.g-recaptcha
+     [:button.btn.g-recaptcha.bg-slate-900.text-slate-50.px-10.py-2
       (merge (when site-key
                {:data-sitekey site-key
                 :data-callback "submitSignin"})
@@ -120,8 +119,7 @@
     [:.h-1]
     [:.text-sm "Don't have an account yet? " [:a.link {:href "/"} "Sign up"] "."]
     [:.h-3]
-    biff/recaptcha-disclosure
-    email-disabled-notice)))
+    biff/recaptcha-disclosure)))
 
 (defn enter-code-page [{:keys [recaptcha/site-key params] :as ctx}]
   (ui/page
