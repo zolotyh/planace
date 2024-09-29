@@ -104,8 +104,8 @@
                      :description (str settings/app-name " Description")
                      :image "https://clojure.org/images/clojure-logo-120b.png"})
        (update :base/head (fn [head]
-                            (concat [[:link {:rel "stylesheet" :href (css-path "/css/main.css")}]
-                                     [:link {:rel "stylesheet" :href (css-path "/css/animate.min.css")}]
+                            (concat [[:link {:rel "stylesheet" :href (css-path "/css/animate.min.css")}]
+                                     [:link {:rel "stylesheet" :href (css-path "/css/main.css")}]
                                      [:script {:src (js-path "/js/htmx.js")}]
                                      [:script {:src (js-path "/js/ws.js")}]
                                      [:script {:src (js-path "/js/main.js")}]

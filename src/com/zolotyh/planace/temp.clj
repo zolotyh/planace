@@ -12,7 +12,7 @@
 
 
 (defn card [{:keys [rotate color classes]}]
-  (let [static-classes "absolute block top-0 left-0 w-[120px] h-[167px] xl:w-[240px] xl:h-[334px] rounded-md drop-shadow-xl"]
+  (let [static-classes "absolute block w-[120px] h-[167px] xl:w-[240px] xl:h-[334px] rounded-md drop-shadow-xl bg-[url('/img/noise.svg')]"]
     [:span
      {:class (str/join " "
                        [static-classes
@@ -30,13 +30,13 @@
   [:a
    {:class "relative w-[120px] h-[167px] xl:w-[240px] xl:h-[334px] block mx-auto"
     :href "/"}
-   (card {:rotate :right :color :brown :classes ""})
-   (card {:rotate :left :color :blue :classes ""})
-   (card {:rotate :none :color :red  :classes "animate__animated  animate__jackInTheBox"})])
+   (card {:rotate :right :color :brown :classes "xl:top-4 xl:left-2 animate__animated animate__customRotateInDownRight animate__delay-1s"})
+   (card {:rotate :left :color :blue :classes "xl:-top-4 xl:-left-2 animate__animated  animate__customRotateInDownLeft animate__delay-1s"})
+   (card {:rotate :none :color :red  :classes "top-0 left-0 animate__animated animate__rollIn"})])
 
 
 (def slogan
-  [:p.block.text-white.text-2xl.text-center.mt-4.font-body.text-shadow.shadow-slate-900.xl:text-3xl "Level Up Your" [:br] "Planning Poker!"])
+  [:p.block.text-white.text-2xl.text-center.mt-4.font-body.text-shadow.shadow-slate-900.xl:text-4xl "Level Up Your" [:br] "Planning Poker!"])
 
 
 (defn main-page [ctx]

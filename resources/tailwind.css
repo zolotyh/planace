@@ -87,3 +87,74 @@ body {
 .htmx-request.htmx-indicator{
   opacity:1
 }
+
+
+@-webkit-keyframes customRotateInDownLeft {
+    0% {
+        -webkit-transform: rotate(-45deg);
+        transform: rotate(-45deg);
+        opacity: 0
+    }
+
+    to {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        opacity: 1
+    }
+}
+
+@keyframes customRotateInDownLeft {
+    0% {
+        -webkit-transform: rotate(-45deg);
+        transform: rotate(-45deg) rotate(-6deg);
+        opacity: 0
+    }
+
+    to {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0) rotate(-6deg);
+        opacity: 1
+    }
+}
+
+.animate__customRotateInDownLeft {
+    -webkit-animation-name: customRotateInDownLeft;
+    animation-name: customRotateInDownLeft;
+    -webkit-transform-origin: left bottom;
+    transform-origin: left bottom
+}
+
+@-webkit-keyframes customRotateInDownRight {
+    0% {
+        -webkit-transform: rotate(45deg);
+        transform: rotate(45deg);
+        opacity: 0
+    }
+
+    to {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0) rotate(6deg);
+        opacity: 1
+    }
+}
+
+@keyframes customRotateInDownRight {
+    0% {
+        -webkit-transform: rotate(45deg);
+        transform: rotate(45deg);
+        opacity: 0
+    }
+
+    to {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0) rotate(6deg);
+        opacity: 1
+    }
+}
+
+.animate__customRotateInDownRight {
+    -webkit-animation-name: customRotateInDownRight;
+    animation-name: customRotateInDownRight;
+    -webkit-transform-origin: right bottom;
+    transform-origin: right bottom
+}
