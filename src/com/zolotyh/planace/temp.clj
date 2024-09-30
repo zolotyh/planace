@@ -12,7 +12,7 @@
 
 
 (defn card [{:keys [rotate color classes]}]
-  (let [static-classes "absolute block w-[120px] h-[167px] xl:w-[240px] xl:h-[334px] rounded-md drop-shadow-xl bg-[url('/img/noise.png')]"]
+  (let [static-classes "absolute block w-[120px] h-[167px] xl:w-[240px] xl:h-[334px] rounded-md drop-shadow-xl bg-[url('/img/noise.svg')]"]
     [:span
      {:class (str/join " "
                        [static-classes
