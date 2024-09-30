@@ -119,7 +119,7 @@
 (defn page [ctx & body]
   (base
    ctx
-   [:div#root.sample-transition.h-screen.flex.items-center.justify-center
+   [:div#root.sample-transition.h-screen.flex.items-center.justify-center.font-body
     (when (bound? #'csrf/*anti-forgery-token*)
       {:hx-headers (cheshire/generate-string
                     {:x-csrf-token csrf/*anti-forgery-token*})})

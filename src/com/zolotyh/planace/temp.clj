@@ -12,7 +12,7 @@
 
 
 (defn card [{:keys [rotate color classes]}]
-  (let [static-classes "absolute block w-[120px] h-[167px] xl:w-[240px] xl:h-[334px] rounded-md drop-shadow-xl bg-[url('/img/noise.svg')]"]
+  (let [static-classes "absolute block w-[120px] h-[167px] xl:w-[240px] xl:h-[334px] rounded-md drop-shadow-xl bg-[url('/img/noise.png')]"]
     [:span
      {:class (str/join " "
                        [static-classes
@@ -30,9 +30,9 @@
   [:a
    {:class "relative w-[120px] h-[167px] xl:w-[240px] xl:h-[334px] block mx-auto"
     :href "/"}
-   (card {:rotate :right :color :brown :classes "xl:top-4 xl:left-2 animate__animated animate__customRotateInDownRight animate__delay-1s"})
-   (card {:rotate :left :color :blue :classes "xl:-top-4 xl:-left-2 animate__animated  animate__customRotateInDownLeft animate__delay-1s"})
-   (card {:rotate :none :color :red  :classes "top-0 left-0 animate__animated animate__rollIn"})])
+   (card {:rotate :right :color :brown :classes "xl:top-4 xl:left-2 animate__animated animate__customRotateInDownRight animate__fast"})
+   (card {:rotate :left :color :blue :classes "xl:-top-4 xl:-left-2 animate__animated  animate__customRotateInDownLeft animate__fast"})
+   (card {:rotate :none :color :red  :classes "top-0 left-0 animate__animated animate__fadeInDownBig animate__faster"})])
 
 
 (def slogan
