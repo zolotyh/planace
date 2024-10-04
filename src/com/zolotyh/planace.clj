@@ -8,6 +8,7 @@
    [com.zolotyh.planace.email :as email]
    [com.zolotyh.planace.home :as home]
    [com.zolotyh.planace.middleware :as mid]
+   [com.zolotyh.planace.room-list :as room-list]
    [com.zolotyh.planace.schema :as schema]
    [com.zolotyh.planace.temp :as tmp]
    [com.zolotyh.planace.ui :as ui]
@@ -23,6 +24,7 @@
   [app/module
    (biff/authentication-module {})
    tmp/module
+   room-list/module
    home/module
    schema/module
    worker/module])

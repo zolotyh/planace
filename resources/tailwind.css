@@ -78,16 +78,33 @@ body {
 .right-sidebar { grid-area: 2 / 10 / 3 / 13; }
 .footer { grid-area: 3 / 1 / 4 / 13; }
 
+/* HTML: <div class="loader"></div> */
+.loader {
+  opacity: 0;
+  margin: -2px auto 0;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  height: 2px;
+  background:
+   linear-gradient(#B6433C 0 0) 0/0% no-repeat
+   #ddd;
+  animation: l1 2s infinite linear;
+}
+@keyframes l1 {
+    100% {background-size:100%}
+}
+
 
 .htmx-indicator{
   opacity:0;
   transition: opacity 500ms ease-in;
 }
 .htmx-request .htmx-indicator{
-  opacity:1
+  display: block;
 }
-.htmx-request.htmx-indicator{
-  opacity:1
+.htmx-request {
+  opacity: 1;
 }
 
 
