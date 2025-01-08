@@ -1,12 +1,7 @@
 (ns com.zolotyh.planace.poker
   (:require
-   [com.zolotyh.planace.settings :as settings]
-   [com.zolotyh.planace.ui :as ui]))
+   [com.zolotyh.planace.middleware :as mid]
+   [com.zolotyh.planace.poker.ctrls :as ctrls]))
 
-(def poker-page
-  (ui/page
-   {:base/title (str "About " settings/app-name)}
-   [:p "This is poker page"]))
-
-(def module
-  {:static {"/poker/" poker-page}})
+(def module {:routes ["/poker" {:middleware [mid/wrap-signed-in]}
+                      ["" {:get ctrls/room}]]})

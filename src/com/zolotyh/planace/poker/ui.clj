@@ -1,35 +1,27 @@
 (ns com.zolotyh.planace.poker.ui
   (:require
-   [com.zolotyh.planace.poker.ids :as ids]
-   [cheshire.core :as cheshire]))
+   [cheshire.core :as cheshire]
+   [com.zolotyh.planace.poker.ids :as ids]))
 
-(defn hx-vote-attrs [{:keys [path]}]
-  {:hx-post path
-   :hx-target ids/room-id
-   :hx-ext "json-enc"
-   :hx-trigger "click"})
+(defn results [votes]
+  [:div (cheshire/generate-string  votes {:pretty true})])
 
-(defn voting-panel-item [{:keys [key] :as item} ctx]
-  (let [item-json (cheshire/generate-string item)]
-    [:div (merge (hx-vote-attrs ctx) {:hx-val item-json}) key]))
+(defn voting [options]
+  [:div (cheshire/generate-string  options {:pretty true})])
 
-(defn voting-panel [seq {:keys [path]}]
-  [:div
-   (map #(voting-panel-item % {:path path})  seq)])
+(defn room [{:keys [votes options room]}]
+  (let [{:keys [title]} room]
+    [:div {:id ids/room}
+     title
+     (voting options)
+     (results votes)]))
 
-(voting-panel
- (->>
-  (range 2)
-  (map #(hash-map :key % :value %)))
- {:path "path to"})
-
-(defn results-panel []
-  [:div "results-panel"])
-
-(defn room []
-  [:div "room"
-   (voting-panel)
-   (results-panel)])
-
-
-
+(room {:votes
+       (->>
+        (range 2)
+        (map #(hash-map :val % :user (random-uuid))))
+       :options
+       (->>
+        (range 3)
+        (map #(hash-map :val % :keys %)))
+       :room {:title "room title"}})
