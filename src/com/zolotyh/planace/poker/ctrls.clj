@@ -1,6 +1,7 @@
 (ns com.zolotyh.planace.poker.ctrls
   (:require
    [cheshire.core :as cheshire]
+   [clojure.tools.logging :as log]
    [com.zolotyh.planace.poker.db :as db]
    [com.zolotyh.planace.poker.ids :as ids]
    [com.zolotyh.planace.poker.path-ids :as paths-ids]
@@ -17,11 +18,14 @@
                 (->>
                  (range 3)
                  (map #(hash-map :val % :keys %)))
-                :room {:title "<>room title<> "
+                :room {:room/title "<>room title<> "
                        :closed? true}})
 
-(defn room [_]
-  (ui/room test-data))
+(defn room [{:keys [biff/db path-params]}]
+  (let [room-id (:room-id path-params)
+        room (xt/entity db (parse-uuid room-id))]
+    (log/error (merge test-data room))
+    (ui/room (merge test-data {:room room}))))
 
 (def swapStr "innerHTML swap:0.1s settle:0.3s transition:true")
 
@@ -40,11 +44,8 @@
                                :target ids/root-id})
                "location" redirect-url}}))
 
-(defn room-list [ctx]
-  (ui/room-list ctx))
-
 (defn room-list [{:keys [session biff/db] :as ctx}]
   (let [uid (:uid session)
         user (xt/entity db uid)
         rooms (db/q-by-ids ctx (:user/rooms user))]
-    (ui/room-list rooms)))
+    (ui/room-list rooms ctx)))
