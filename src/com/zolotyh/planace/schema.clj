@@ -6,8 +6,7 @@
           [:xt/id                     :user/id]
           [:user/email                :string]
           [:user/joined-at            inst?]
-          [:user/foo {:optional true} :string]
-          [:user/bar {:optional true} :string]]
+          [:user/rooms      {:optional true}         [:vector :room/id]]]
 
    :room/id :uuid
    :room [:map {:closed true}

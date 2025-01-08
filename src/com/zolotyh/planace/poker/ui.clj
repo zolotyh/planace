@@ -1,7 +1,9 @@
 (ns com.zolotyh.planace.poker.ui
   (:require
    [cheshire.core :as cheshire]
-   [com.zolotyh.planace.poker.ids :as ids]))
+   [com.zolotyh.planace.poker.ids :as ids]
+   [com.zolotyh.planace.ui :as ui]
+   [com.biffweb :as biff]))
 
 (defn results-item [item]
   [:li
@@ -16,11 +18,22 @@
 (defn voting [options]
   [:div (map voting-item options)])
 
+(defn room-create-form [{:keys [path]}]
+  (biff/form
+   {:src path :method "post" :hx-post true}
+   [:input {:type "text" :name "title"}]
+   [:button {:type "submit"} "Create new room"]))
+
+(defn room-list [ctx]
+  (ui/page {:title "room-list"} (room-create-form {:path "path"})))
+
 (defn room [{:keys [votes options room]}]
   (let [{:keys [title closed?]} room]
-    [:div {:id ids/room}
-     [:h1
-      title]
-     [:h3 (if closed? true false)]
-     (voting options)
-     (results votes)]))
+    (ui/page
+     {:title "room page"}
+     [:div {:id ids/room}
+      [:h1
+       title]
+      [:h3 (if closed? true false)]
+      (voting options)
+      (results votes)])))

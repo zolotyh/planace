@@ -5,7 +5,8 @@
             [com.biffweb :as biff]
             [ring.middleware.anti-forgery :as csrf]
             [ring.util.response :as ring-response]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [com.zolotyh.planace.poker.ids :as ids]))
 
 (defn static-path [path]
   (if-some [last-modified (some-> (io/resource (str "public" path))
@@ -44,7 +45,7 @@
     (when (bound? #'csrf/*anti-forgery-token*)
       {:hx-headers (cheshire/generate-string
                     {:x-csrf-token csrf/*anti-forgery-token*})})
-    body]
+    [:div {:id ids/root} body]]
    [:.flex-grow]
    [:.flex-grow]))
 
