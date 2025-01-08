@@ -1,22 +1,25 @@
 (ns com.zolotyh.planace
-  (:require [com.biffweb :as biff]
-            [com.zolotyh.planace.email :as email]
-            [com.zolotyh.planace.app :as app]
-            [com.zolotyh.planace.home :as home]
-            [com.zolotyh.planace.middleware :as mid]
-            [com.zolotyh.planace.ui :as ui]
-            [com.zolotyh.planace.worker :as worker]
-            [com.zolotyh.planace.schema :as schema]
-            [clojure.test :as test]
-            [clojure.tools.logging :as log]
-            [clojure.tools.namespace.repl :as tn-repl]
-            [malli.core :as malc]
-            [malli.registry :as malr]
-            [nrepl.cmdline :as nrepl-cmd])
+  (:require
+   [clojure.test :as test]
+   [clojure.tools.logging :as log]
+   [clojure.tools.namespace.repl :as tn-repl]
+   [com.biffweb :as biff]
+   [com.zolotyh.planace.app :as app]
+   [com.zolotyh.planace.email :as email]
+   [com.zolotyh.planace.home :as home]
+   [com.zolotyh.planace.middleware :as mid]
+   [com.zolotyh.planace.poker :as poker]
+   [com.zolotyh.planace.schema :as schema]
+   [com.zolotyh.planace.ui :as ui]
+   [com.zolotyh.planace.worker :as worker]
+   [malli.core :as malc]
+   [malli.registry :as malr]
+   [nrepl.cmdline :as nrepl-cmd])
   (:gen-class))
 
 (def modules
   [app/module
+   poker/module
    (biff/authentication-module {})
    home/module
    schema/module
