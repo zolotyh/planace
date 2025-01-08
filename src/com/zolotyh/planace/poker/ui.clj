@@ -24,8 +24,13 @@
    [:input {:type "text" :name "title"}]
    [:button {:type "submit"} "Create new room"]))
 
-(defn room-list [ctx]
-  (ui/page {:title "room-list"} (room-create-form {:path "path"})))
+(defn room-list-item [room]
+  [:li (cheshire/generate-string room {:pretty true})])
+
+(defn room-list [room-list]
+  (ui/page {:title "room-list"}
+           (room-create-form {:path "path"})
+           [:ul (map room-list-item room-list)]))
 
 (defn room [{:keys [votes options room]}]
   (let [{:keys [title closed?]} room]

@@ -42,3 +42,9 @@
 
 (defn room-list [ctx]
   (ui/room-list ctx))
+
+(defn room-list [{:keys [session biff/db] :as ctx}]
+  (let [uid (:uid session)
+        user (xt/entity db uid)
+        rooms (db/q-by-ids ctx (:user/rooms user))]
+    (ui/room-list rooms)))
