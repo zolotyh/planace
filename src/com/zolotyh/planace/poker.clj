@@ -11,7 +11,11 @@
                        ["" {:name paths-ids/room
                             :get ctrls/room
                             :put ctrls/update-room}]
-                       ["/vote" {:name paths-ids/vote
-                                 :post ctrls/vote}]]]})
+                       ["/vote"   {:name paths-ids/vote
+                                   :conflicting true
+                                   :post ctrls/vote}]
+                       ["/toggle" {:name paths-ids/toggle
+                                   :conflicting true
+                                   :post ctrls/room-toggle}]]]})
 
 

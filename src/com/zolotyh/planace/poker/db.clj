@@ -16,6 +16,7 @@
         room-id (random-uuid)
         room {:xt/id room-id
               :room/title title
+              :room/closed? false
               :room/created-at :db/now
               :room/owner id}
         new-rooms (if (vector? rooms)  (conj rooms room-id) [room-id])]
@@ -30,5 +31,5 @@
 (defn update-room [{:keys [biff/db session path-params params]} title user]
   (let [room-id (parse-uuid (:room-id path-params))]
     (xt/submit-tx db [[::xt/put {:xt/id room-id :msg/title (:title params)}]])
-    (ui/room (xt/entity db room-id))))
+    (ui/room-page (xt/entity db room-id))))
 

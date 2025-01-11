@@ -13,6 +13,7 @@
           [:xt/id       :room/id]
           [:room/owner    :user/id]
           [:room/title    :string]
+          [:room/closed? {:optional true}    :boolean]
           [:room/created-at inst?]]
 
    :vote/id :uuid

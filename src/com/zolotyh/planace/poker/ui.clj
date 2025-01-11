@@ -23,7 +23,6 @@
   (let [room-id (:room-id path-params)
         url (:path
              (r/match-by-name router paths-ids/vote {:room-id room-id}))]
-    (log/error "url is" url (r/match-by-name router paths-ids/vote {:room-id room-id}))
     [:li
      [:a {:hx-post url
           :hx-target ids/room-id
@@ -54,8 +53,12 @@
            [:ul (map (partial room-list-item ctx) room-list)]))
 
 (defn room [{:keys [votes options room ctx]}]
-  (let [{:keys [room/title closed?]} room]
+  (let [{:keys [room/title room/closed?]} room
+        {:keys [reitit.core/router]} ctx
+        toggle-match (r/match-by-name router paths-ids/toggle {:room-id (:xt/id room)})
+        toggle-path (:path toggle-match)]
     [:div {:id ids/room}
+     [:pre (cheshire/generate-string room)]
      [:h1
       title]
      (biff/form
@@ -63,7 +66,7 @@
       [:input {:type "text" :name "title"}]
       [:button "Submit"])
 
-     [:h3 (if closed? true false)]
+     [:h3 {:hx-post toggle-path :hx-trigger :click :hx-target ids/room-id} (if closed? true false)]
      [:p (random-uuid)]
      (voting ctx options)
      (results votes)]))
