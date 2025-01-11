@@ -2,3 +2,4 @@
 
 (def room-list ::room-list)
 (def room ::room)
+(def vote ::vote)

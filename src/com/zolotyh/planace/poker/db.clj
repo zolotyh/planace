@@ -1,6 +1,8 @@
 (ns com.zolotyh.planace.poker.db
   (:require
-   [com.biffweb :as biff]))
+   [com.biffweb :as biff]
+   [xtdb.api :as xt]
+   [com.zolotyh.planace.poker.ui :as ui]))
 
 (defn q-by-ids [{:keys [biff/db]} ids]
   (let [query '{:find (pull item [*])
@@ -24,3 +26,9 @@
                                   :db/op :update,
                                   :user/rooms new-rooms})])
     room))
+
+(defn update-room [{:keys [biff/db session path-params params]} title user]
+  (let [room-id (parse-uuid (:room-id path-params))]
+    (xt/submit-tx db [[::xt/put {:xt/id room-id :msg/title (:title params)}]])
+    (ui/room (xt/entity db room-id))))
+

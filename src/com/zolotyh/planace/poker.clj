@@ -7,4 +7,11 @@
 (def module {:routes ["/poker" {:middleware [mid/wrap-signed-in]}
                       ["" {:get ctrls/room-list
                            :post ctrls/create-room}]
-                      ["/room/:room-id" {:get ctrls/room :name paths-ids/room}]]})
+                      ["/room/:room-id"
+                       ["" {:name paths-ids/room
+                            :get ctrls/room
+                            :put ctrls/update-room}]
+                       ["/vote" {:name paths-ids/vote
+                                 :post ctrls/vote}]]]})
+
+

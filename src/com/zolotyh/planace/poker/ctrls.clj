@@ -21,11 +21,10 @@
                 :room {:room/title "<>room title<> "
                        :closed? true}})
 
-(defn room [{:keys [biff/db path-params]}]
+(defn room [{:keys [biff/db path-params] :as ctx}]
   (let [room-id (:room-id path-params)
         room (xt/entity db (parse-uuid room-id))]
-    (log/error (merge test-data room))
-    (ui/room (merge test-data {:room room}))))
+    (ui/room-page (merge test-data {:room room, :ctx ctx}))))
 
 (def swapStr "innerHTML swap:0.1s settle:0.3s transition:true")
 
@@ -49,3 +48,13 @@
         user (xt/entity db uid)
         rooms (db/q-by-ids ctx (:user/rooms user))]
     (ui/room-list rooms ctx)))
+
+(defn update-room [_]
+  [:div "update room"])
+
+(defn vote [{:keys [session path-params biff/db] :as ctx}]
+  (let [room-id (parse-uuid
+                 (:room-id path-params))
+        room (xt/entity db room-id)]
+    (ui/room (merge test-data {:room room, :ctx ctx}))))
+
