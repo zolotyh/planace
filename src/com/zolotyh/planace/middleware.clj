@@ -1,14 +1,20 @@
 (ns com.zolotyh.planace.middleware
-  (:require [com.biffweb :as biff]
-            [muuntaja.middleware :as muuntaja]
-            [ring.middleware.anti-forgery :as csrf]
-            [ring.middleware.defaults :as rd]))
+  (:require
+   [clojure.tools.logging :as log]
+   [com.biffweb :as biff]
+   [com.zolotyh.planace.poker.path-ids :as paths-ids]
+   [muuntaja.middleware :as muuntaja]
+   [reitit.core :as r]
+   [ring.middleware.anti-forgery :as csrf]
+   [ring.middleware.defaults :as rd]))
 
 (defn wrap-redirect-signed-in [handler]
-  (fn [{:keys [session] :as ctx}]
+  (fn [{:keys [session reitit.core/router] :as ctx}]
     (if (some? (:uid session))
-      {:status 303
-       :headers {"location" "/app"}}
+      (let [url (:path
+                 (r/match-by-name router paths-ids/room-list))]
+        {:status 303
+         :headers {"location" url}})
       (handler ctx))))
 
 (defn wrap-signed-in [handler]

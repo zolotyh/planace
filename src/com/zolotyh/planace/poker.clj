@@ -5,7 +5,8 @@
    [com.zolotyh.planace.poker.path-ids :as paths-ids]))
 
 (def module {:routes ["/poker" {:middleware [mid/wrap-signed-in]}
-                      ["" {:get ctrls/room-list
+                      ["" {:name paths-ids/room-list
+                           :get ctrls/room-list
                            :post ctrls/create-room}]
                       ["/room/:room-id"
                        ["" {:name paths-ids/room
