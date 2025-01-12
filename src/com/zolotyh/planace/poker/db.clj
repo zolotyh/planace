@@ -28,7 +28,7 @@
                                   :user/rooms new-rooms})])
     room))
 
-(defn update-room [{:keys [biff/db session path-params params]} title user]
+(defn update-room [{:keys [biff/db path-params params]}]
   (let [room-id (parse-uuid (:room-id path-params))]
     (xt/submit-tx db [[::xt/put {:xt/id room-id :msg/title (:title params)}]])
     (ui/room-page (xt/entity db room-id))))

@@ -1,10 +1,9 @@
 (ns com.zolotyh.planace.email
-  (:require [camel-snake-kebab.core :as csk]
-            [camel-snake-kebab.extras :as cske]
-            [clj-http.client :as http]
-            [com.zolotyh.planace.settings :as settings]
-            [clojure.tools.logging :as log]
-            [rum.core :as rum]))
+  (:require
+   [clj-http.client :as http]
+   [clojure.tools.logging :as log]
+   [com.zolotyh.planace.settings :as settings]
+   [rum.core :as rum]))
 
 (defn signin-link [{:keys [to url user-exists]}]
   (let [[subject action] (if user-exists
@@ -71,7 +70,7 @@
       (log/error (:body result)))
     success))
 
-(defn send-console [ctx form-params]
+(defn send-console [_ctx form-params]
   (println "TO:" (:to form-params))
   (println "SUBJECT:" (:subject form-params))
   (println)

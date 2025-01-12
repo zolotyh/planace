@@ -1,6 +1,4 @@
-(ns com.zolotyh.planace.poker.ws
-  (:require
-   [clojure.tools.logging :as log]))
+(ns com.zolotyh.planace.poker.ws)
 
 (defn add-connection [room-connections room-id conn]
   (update room-connections room-id #(conj (if % % (hash-set)) conn)))

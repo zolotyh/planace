@@ -1,6 +1,5 @@
 (ns com.zolotyh.planace.middleware
   (:require
-   [clojure.tools.logging :as log]
    [com.biffweb :as biff]
    [com.zolotyh.planace.poker.path-ids :as paths-ids]
    [muuntaja.middleware :as muuntaja]
@@ -31,9 +30,11 @@
     (let [response (handler ctx)]
       (println "REQUEST")
       (biff/pprint ctx)
+      #_{:clj-kondo/ignore [:inline-def]}
       (def ctx* ctx)
       (println "RESPONSE")
       (biff/pprint response)
+      #_{:clj-kondo/ignore [:inline-def]}
       (def response* response)
       response)))
 

@@ -8,7 +8,7 @@
             [ring.adapter.jetty9 :as jetty]
             [cheshire.core :as cheshire]))
 
-(defn set-foo [{:keys [session params reitit.core/router] :as ctx}]
+(defn set-foo [{:keys [session params] :as ctx}]
   (biff/submit-tx ctx
                   [{:db/op :update
                     :db/doc-type :user
@@ -128,7 +128,7 @@
                       (swap! chat-clients conj ws))
         :on-text (fn [ws text-message]
                    (send-message ctx {:ws ws :text text-message}))
-        :on-close (fn [ws status-code reason]
+        :on-close (fn [ws]
                     (swap! chat-clients disj ws))}})
 
 (def about-page

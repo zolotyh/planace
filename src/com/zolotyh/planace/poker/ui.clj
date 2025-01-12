@@ -1,7 +1,6 @@
 (ns com.zolotyh.planace.poker.ui
   (:require
    [cheshire.core :as cheshire]
-   [clojure.tools.logging :as log]
    [com.biffweb :as biff]
    [com.zolotyh.planace.poker.ids :as ids]
    [com.zolotyh.planace.poker.path-ids :as paths-ids]
