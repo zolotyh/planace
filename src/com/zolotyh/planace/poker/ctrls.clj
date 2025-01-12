@@ -9,7 +9,9 @@
    [com.zolotyh.planace.poker.ui :as ui]
    [com.zolotyh.planace.poker.utils.http :as http-utils]
    [reitit.core :as r]
-   [xtdb.api :as xt]))
+   [xtdb.api :as xt]
+   [rum.core :as rum]
+   [ring.adapter.jetty9 :as jetty]))
 
 (def test-data {:votes
                 (->>
@@ -59,10 +61,17 @@
         room (xt/entity db room-id)]
     (ui/room (merge test-data {:room room, :ctx ctx}))))
 
+(defn notify-about-room-updates [{:keys [com.zolotyh.planace/room-connections] :as ctx} room]
+  (let [room-cons (get @room-connections (str (:xt/id room)))]
+    (doseq [con room-cons]
+      (jetty/send! con
+                   (rum/render-static-markup (ui/room (merge test-data {:room room, :ctx ctx})))))))
+
 (defn room-toggle [{:keys [path-params biff/db] :as ctx}]
   (let [room-id (parse-uuid (:room-id path-params))
         room  (xt/entity db room-id)
         updated-room (update room :room/closed? not)]
+    (notify-about-room-updates ctx updated-room)
     (biff/submit-tx ctx
                     [(merge
                       {:db/op :update
