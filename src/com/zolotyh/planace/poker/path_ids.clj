@@ -4,3 +4,5 @@
 (def room ::room)
 (def vote ::vote)
 (def toggle ::toggle)
+(def ws ::ws)
+

@@ -1,13 +1,13 @@
 (ns com.zolotyh.planace.poker.ui
   (:require
    [cheshire.core :as cheshire]
-   [com.zolotyh.planace.poker.ids :as ids]
-   [com.zolotyh.planace.ui :as ui]
-   [com.biffweb :as biff]
-   [reitit.core :as r]
-   [com.zolotyh.planace.poker.path-ids :as paths-ids]
    [clojure.tools.logging :as log]
-   [rum.core :as rum]))
+   [com.biffweb :as biff]
+   [com.zolotyh.planace.poker.ids :as ids]
+   [com.zolotyh.planace.poker.path-ids :as paths-ids]
+   [com.zolotyh.planace.poker.utils.url :as url-utils]
+   [com.zolotyh.planace.ui :as ui]
+   [reitit.core :as r]))
 
 (defn results-item [item]
   [:li
@@ -71,7 +71,17 @@
      (voting ctx options)
      (results votes)]))
 
-(defn room-page [ctx]
-  (ui/page
-   {:title "room page"}
-   (room ctx)))
+(defn with-ws-connection [elem url]
+  [:div {:ws-connect url
+         :hx-ext "ws"}
+   elem])
+
+(defn room-page [{:keys [ctx] :as params}]
+  (let [{:keys [path-params reitit.core/router]} ctx
+        room-id (:room-id path-params)
+        url (url-utils/generate router paths-ids/ws {:room-id room-id})]
+    (ui/page
+     {:title "room page"}
+     (with-ws-connection
+       (room params)
+       url))))

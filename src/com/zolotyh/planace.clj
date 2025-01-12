@@ -59,6 +59,7 @@
    :biff.beholder/on-save #'on-save
    :biff.middleware/on-error #'ui/on-error
    :biff.xtdb/tx-fns biff/tx-fns
+   :com.zolotyh.planace/room-connections (atom #{})
    :com.zolotyh.planace/chat-clients (atom #{})})
 
 (defonce system (atom {}))
