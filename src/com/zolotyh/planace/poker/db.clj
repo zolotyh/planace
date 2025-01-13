@@ -15,12 +15,11 @@
   (let [rooms (:user/rooms user)
         id (:xt/id user)
         room-id (random-uuid)
-        vote (schema/vote room-id)
-        room {:xt/id room-id
-              :room/title title
-              :room/active-vote vote
-              :room/created-at :db/now
-              :room/owner id}
+        vote (schema/vote-defaults room-id)
+        room (schema/room-defaults {:owner-id id
+                                    :room-id room-id
+                                    :vote vote
+                                    :title title})
         new-rooms (if (vector? rooms)  (conj rooms room-id) [room-id])]
 
     (biff/submit-tx ctx

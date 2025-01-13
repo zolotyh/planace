@@ -14,12 +14,19 @@
       [:key :string]
       [:val :int]]]]])
 
-(defn vote [room-id]
+(defn vote-defaults [room-id]
   {:xt/id (random-uuid)
    :vote/room room-id
    :vote/closed? true
    :vote/sequence (sequences/natural)
    :vote/created-at :db/now})
+
+(defn room-defaults [{:keys [room-id title vote owner-id]}]
+  {:xt/id room-id
+   :room/title title
+   :room/active-vote vote
+   :room/created-at :db/now
+   :room/owner owner-id})
 
 (def schema
   {:user/id :uuid
