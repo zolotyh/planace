@@ -51,8 +51,9 @@
            (room-create-form {:path "path"})
            [:ul (map (partial room-list-item ctx) room-list)]))
 
-(defn room [{:keys [votes options room ctx]}]
-  (let [{:keys [room/title room/closed?]} room
+(defn room [{:keys [votes room ctx]}]
+  (let [{:keys [room/title room/active-vote]} room
+        {:keys [vote/closed?]} active-vote
         {:keys [reitit.core/router]} ctx
         toggle-match (r/match-by-name router paths-ids/toggle {:room-id (:xt/id room)})
         toggle-path (:path toggle-match)]
@@ -67,7 +68,7 @@
 
      [:h3 {:hx-post toggle-path :hx-trigger :click :hx-target ids/room-id} (if closed? true false)]
      [:p (random-uuid)]
-     (voting ctx options)
+     (voting ctx (get-in room [:room/active-vote :vote/sequence]))
      (results votes)]))
 
 (defn with-ws-connection [elem url]

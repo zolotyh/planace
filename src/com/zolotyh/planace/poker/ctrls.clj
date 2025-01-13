@@ -69,14 +69,18 @@
 (defn room-toggle [{:keys [path-params biff/db] :as ctx}]
   (let [room-id (parse-uuid (:room-id path-params))
         room  (xt/entity db room-id)
-        updated-room (update room :room/closed? not)]
+        updated-room (update-in room [:room/active-vote :vote/closed?]  not)]
     (notify-about-room-updates ctx updated-room)
     (biff/submit-tx ctx
                     [(merge
                       {:db/op :update
                        :db/doc-type :room}
-                      updated-room)])
-    (ui/room (merge test-data {:room updated-room, :ctx ctx}))))
+                      updated-room)
+                     (merge
+                      {:db/op :update
+                       :db/doc-type :vote}
+                      (:room/active-vote updated-room))])
+    (ui/room {:room updated-room, :ctx ctx})))
 
 
 

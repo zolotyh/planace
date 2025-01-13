@@ -8,6 +8,12 @@
    [:vote/room       :room/id]
    [:vote/closed?    :boolean]
    [:vote/created-at inst?]
+   [:vote/results
+    [:vector
+     [:map
+      [:user :user/id]
+      [:key :string]
+      [:val :int]]]]
    [:vote/sequence
     [:vector
      [:map
@@ -18,6 +24,7 @@
   {:xt/id (random-uuid)
    :vote/room room-id
    :vote/closed? true
+   :vote/results []
    :vote/sequence (sequences/natural)
    :vote/created-at :db/now})
 
