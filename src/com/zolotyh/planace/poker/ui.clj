@@ -44,7 +44,7 @@
   (let [path (:path
               (r/match-by-name router paths-ids/room {:room-id (:xt/id room)}))]
     [:li
-     [:a {:href path :hx-get path :hx-target ids/root-id :hx-push-url "true"} (cheshire/generate-string room {:pretty true})]]))
+     [:a {:href path :hx-get path :hx-target ids/root-id :hx-push-url "true"} (:room/title room)]]))
 
 (defn room-list [room-list ctx]
   (ui/page {:title "room-list"}
