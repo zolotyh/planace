@@ -2,7 +2,8 @@
 
 (defn natural
   ([n] (->> (range n)
-            (map #(hash-map :val % :key %))))
+            (map #(hash-map :val % :key (str %)))
+            (into [])))
   ([]
    (natural 10))) ;default value is 10
 
@@ -13,7 +14,8 @@
         (map first)
         (take n)
         (distinct)
-        (map #(hash-map :key % :val %))))
+        (map #(hash-map :key (str %) :val %))
+        (into [])))
   ([] (fib 10))) ;default value is 10
 
 (defn t-shirts []

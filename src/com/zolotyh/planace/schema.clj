@@ -1,4 +1,25 @@
-(ns com.zolotyh.planace.schema)
+(ns com.zolotyh.planace.schema
+  (:require
+   [com.zolotyh.planace.poker.sequences :as sequences]))
+
+(def Vote
+  [:map {:closed true}
+   [:xt/id           :vote/id]
+   [:vote/room       :room/id]
+   [:vote/closed?    :boolean]
+   [:vote/created-at inst?]
+   [:vote/sequence
+    [:vector
+     [:map
+      [:key :string]
+      [:val :int]]]]])
+
+(defn vote [room-id]
+  {:xt/id (random-uuid)
+   :vote/room room-id
+   :vote/closed? true
+   :vote/sequence (sequences/natural)
+   :vote/created-at :db/now})
 
 (def schema
   {:user/id :uuid
@@ -13,15 +34,11 @@
           [:xt/id       :room/id]
           [:room/owner    :user/id]
           [:room/title    :string]
-          [:room/closed? {:optional true}    :boolean]
+          [:room/active-vote Vote]
           [:room/created-at inst?]]
 
    :vote/id :uuid
-   :vote [:map {:closed true}
-          [:xt/id       :vote/id]
-          [:vote/room    :room/id]
-          [:vote/closed?    :room/id]
-          [:vote/created-at inst?]]
+   :vote Vote
 
    :msg/id :uuid
    :msg [:map {:closed true}
