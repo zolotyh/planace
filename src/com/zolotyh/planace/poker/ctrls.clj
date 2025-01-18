@@ -6,10 +6,12 @@
    [com.zolotyh.planace.poker.path-ids :as paths-ids]
    [com.zolotyh.planace.poker.ui :as ui]
    [com.zolotyh.planace.poker.utils.http :as http-utils]
+   [com.zolotyh.planace.poker.voting :as voting]
    [reitit.core :as r]
    [ring.adapter.jetty9 :as jetty]
    [rum.core :as rum]
-   [xtdb.api :as xt]))
+   [xtdb.api :as xt]
+   [clojure.tools.logging :as log]))
 
 (def test-data {:votes
                 (->>
@@ -53,11 +55,12 @@
 (defn update-room [_]
   [:div "update room"])
 
-(defn vote [{:keys [path-params biff/db] :as ctx}]
-  (let [room-id (parse-uuid
-                 (:room-id path-params))
-        room (xt/entity db room-id)]
-    (ui/room (merge test-data {:room room, :ctx ctx}))))
+(defn vote [{:keys [session params] :as ctx}]
+  (let [user-id (:uid session)
+        value (parse-long (:val params))
+        new-value (merge {:key (:key params) :val value :user user-id})
+        updated-room (db/update-in-room ctx [:room/active-vote :vote/results] #(voting/vote new-value %))]
+    (ui/room (merge test-data {:room updated-room, :ctx ctx}))))
 
 (defn notify-about-room-updates [{:keys [com.zolotyh.planace/room-connections] :as ctx} room]
   (let [room-cons (get @room-connections (str (:xt/id room)))]

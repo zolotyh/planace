@@ -25,6 +25,7 @@
     [:li
      [:a {:hx-post url
           :hx-target ids/room-id
+          :hx-vals (cheshire/generate-string {:val (:val item) :key (:key item)})
           :hx-trigger "click"
           :href url} (cheshire/generate-string item {:pretty true})]]))
 
@@ -51,7 +52,7 @@
            (room-create-form {:path "path"})
            [:ul (map (partial room-list-item ctx) room-list)]))
 
-(defn room [{:keys [votes room ctx]}]
+(defn room [{:keys [room ctx]}]
   (let [{:keys [room/title room/active-vote]} room
         {:keys [vote/closed?]} active-vote
         {:keys [reitit.core/router]} ctx
@@ -69,7 +70,7 @@
      [:h3 {:hx-post toggle-path :hx-trigger :click :hx-target ids/room-id} (if closed? true false)]
      [:p (random-uuid)]
      (voting ctx (get-in room [:room/active-vote :vote/sequence]))
-     (results votes)]))
+     (results (get-in room [:room/active-vote :vote/results]))]))
 
 (defn with-ws-connection [elem url]
   [:div {:ws-connect url
