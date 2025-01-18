@@ -1,4 +1,6 @@
-(ns com.zolotyh.planace.poker.voting)
+(ns com.zolotyh.planace.poker.voting
+  (:require
+   [clojure.core :as c]))
 
 (defn vote-reducer [new-result memo current-result]
   (let [options (:options memo)]
@@ -20,4 +22,11 @@
     (if has-user?
       updated-options
       (conj updated-options new-result))))
+
+(defn vote-result-for-active-users [votes active-users]
+  (filter (fn [i]
+            (some
+             #(= % (:user i))
+             active-users))
+          votes))
 

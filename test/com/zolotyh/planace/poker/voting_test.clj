@@ -30,3 +30,18 @@
         [{:user "old-user" :val "old-value"}])))
 
   "Should update vote of user")
+
+(deftest keep-active-users
+  (is (= [{:user 1}]
+         (voting/vote-result-for-active-users
+          [{:user 1}]
+          [1])))
+  "Should keep votes for active users")
+
+(deftest filter-active-users
+  (is (= [{:user 1}]
+         (voting/vote-result-for-active-users
+          [{:user 1} {:user 2}]
+          [1])))
+  "Should filter votes for active users")
+
