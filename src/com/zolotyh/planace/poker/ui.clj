@@ -71,8 +71,8 @@
       title]
      (biff/form
       {:src "path" :method "post" :hx-post true}
-      [:input {:type "text" :name "title"}]
-      [:button "Submit"])
+      [:input {:type "text" :name "title" :class "input"}]
+      [:button {:class "button"} "Submit"])
 
      [:h3 {:hx-post toggle-path :hx-trigger :click :hx-target ids/room-id} (if closed? true false)]
      [:p (random-uuid)]
