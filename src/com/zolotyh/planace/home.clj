@@ -1,11 +1,9 @@
 (ns com.zolotyh.planace.home
-  (:require [clj-http.client :as http]
-            [com.biffweb :as biff]
-            [com.zolotyh.planace.middleware :as mid]
-            [com.zolotyh.planace.ui :as ui]
-            [com.zolotyh.planace.settings :as settings]
-            [rum.core :as rum]
-            [xtdb.api :as xt]))
+  (:require
+   [com.biffweb :as biff]
+   [com.zolotyh.planace.middleware :as mid]
+   [com.zolotyh.planace.settings :as settings]
+   [com.zolotyh.planace.ui :as ui]))
 
 (def email-disabled-notice
   [:.text-sm.mt-3.bg-blue-100.rounded.p-2
@@ -77,11 +75,11 @@
       "Sign in"]])
    (when-some [error (:error params)]
      [:<>
-       [:.h-1]
-       [:.text-sm.text-red-600
-        (case error
-          "incorrect-email" "Incorrect email address. Try again."
-          "There was an error.")]])))
+      [:.h-1]
+      [:.text-sm.text-red-600
+       (case error
+         "incorrect-email" "Incorrect email address. Try again."
+         "There was an error.")]])))
 
 (defn signin-page [{:keys [recaptcha/site-key params] :as ctx}]
   (ui/page
@@ -146,11 +144,11 @@
       "Sign in"]])
    (when-some [error (:error params)]
      [:<>
-       [:.h-1]
-       [:.text-sm.text-red-600
-        (case error
-          "invalid-code" "Invalid code."
-          "There was an error.")]])
+      [:.h-1]
+      [:.text-sm.text-red-600
+       (case error
+         "invalid-code" "Invalid code."
+         "There was an error.")]])
    [:.h-3]
    (biff/form
     {:action "/auth/send-code"
