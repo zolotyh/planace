@@ -45,3 +45,27 @@
           [1])))
   "Should filter votes for active users")
 
+(deftest vote-by-user-id
+  (is (= {:user 1}
+         (voting/vote-by-user-id
+          [{:user 1} {:user 2}]
+          1)))
+  "Should return vote by user-id from vote list")
+
+(deftest update-sequence-by-active-vote
+  (is (= [{:val 1}
+          {:val 2 :active true}]
+
+         (voting/update-sequence-by-active-vote
+          [{:val 1} {:val 2}]
+          {:val 2})))
+  "Should update sequence using active-vote")
+
+(deftest vote-result-for-active-users
+  (is (= [{:val 1}
+          {:val 2 :active true}]
+
+         (voting/vote-result-for-active-users
+          [{:val 1} {:val 2}]
+          {:val 2})))
+  "Should update sequence using active-vote")

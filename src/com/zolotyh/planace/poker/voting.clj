@@ -30,3 +30,11 @@
              active-users))
           votes))
 
+(defn vote-by-user-id [votes user-id]
+  (some #(when
+          (= (:user %) user-id) %) votes))
+
+(defn update-sequence-by-active-vote [sequence-items active-vote]
+  (map #(if (= (:val active-vote) (:val %))
+          (merge {:active true} %)
+          %) sequence-items))

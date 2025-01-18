@@ -55,18 +55,19 @@
 (defn update-room [_]
   [:div "update room"])
 
-(defn vote [{:keys [session params] :as ctx}]
-  (let [user-id (:uid session)
-        value (parse-long (:val params))
-        new-value (merge {:key (:key params) :val value :user user-id})
-        updated-room (db/update-in-room ctx [:room/active-vote :vote/results] #(voting/vote new-value %))]
-    (ui/room (merge test-data {:room updated-room, :ctx ctx}))))
-
 (defn notify-about-room-updates [{:keys [com.zolotyh.planace/room-connections] :as ctx} room]
   (let [room-cons (get @room-connections (str (:xt/id room)))]
     (doseq [con room-cons]
       (jetty/send! con
                    (rum/render-static-markup (ui/room (merge test-data {:room room, :ctx ctx})))))))
+
+(defn vote [{:keys [session params] :as ctx}]
+  (let [user-id (:uid session)
+        value (parse-long (:val params))
+        new-value (merge {:key (:key params) :val value :user user-id})
+        updated-room (db/update-in-room ctx [:room/active-vote :vote/results] #(voting/vote new-value %))]
+    (notify-about-room-updates ctx updated-room)
+    (ui/room (merge test-data {:room updated-room, :ctx ctx}))))
 
 (defn room-toggle [ctx]
   (let [updated-room

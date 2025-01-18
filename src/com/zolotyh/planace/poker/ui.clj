@@ -5,6 +5,7 @@
    [com.zolotyh.planace.poker.ids :as ids]
    [com.zolotyh.planace.poker.path-ids :as paths-ids]
    [com.zolotyh.planace.poker.utils.url :as url-utils]
+   [com.zolotyh.planace.poker.voting :as voting]
    [com.zolotyh.planace.ui :as ui]
    [reitit.core :as r]))
 
@@ -55,7 +56,13 @@
 (defn room [{:keys [room ctx]}]
   (let [{:keys [room/title room/active-vote]} room
         {:keys [vote/closed?]} active-vote
-        {:keys [reitit.core/router]} ctx
+        {:keys [reitit.core/router session]} ctx
+        user-id (:uid session)
+        votes (get-in room [:room/active-vote :vote/results])
+        active-vote (voting/vote-by-user-id votes user-id)
+        sequences (voting/update-sequence-by-active-vote
+                   (get-in room [:room/active-vote :vote/sequence])
+                   active-vote)
         toggle-match (r/match-by-name router paths-ids/toggle {:room-id (:xt/id room)})
         toggle-path (:path toggle-match)]
     [:div {:id ids/room}
@@ -69,8 +76,12 @@
 
      [:h3 {:hx-post toggle-path :hx-trigger :click :hx-target ids/room-id} (if closed? true false)]
      [:p (random-uuid)]
-     (voting ctx (get-in room [:room/active-vote :vote/sequence]))
-     (results (get-in room [:room/active-vote :vote/results]))]))
+
+     [:pre
+      (cheshire/generate-string sequences)]
+
+     (voting ctx sequences)
+     (results votes)]))
 
 (defn with-ws-connection [elem url]
   [:div {:ws-connect url
