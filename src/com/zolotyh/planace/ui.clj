@@ -28,6 +28,7 @@
        (update :base/head (fn [head]
                             (concat [[:link {:rel "stylesheet" :href (static-path "/css/main.css")}]
                                      [:script {:src (static-path "/js/htmx.min.js")}]
+                                     [:script {:src (static-path "/js/idiomorph-ext.min.js")}]
                                      [:script {:src (static-path "/js/ws.js")}]
                                      [:script {:src (static-path "/js/json-enc.js")}]
                                      [:script {:src (static-path "/js/main.js")}]
@@ -45,7 +46,7 @@
     (when (bound? #'csrf/*anti-forgery-token*)
       {:hx-headers (cheshire/generate-string
                     {:x-csrf-token csrf/*anti-forgery-token*})})
-    [:div {:id ids/root} body]]
+    [:div {:id ids/root :hx-ext "morph"} body]]
    [:.flex-grow]
    [:.flex-grow]))
 
