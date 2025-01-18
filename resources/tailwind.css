@@ -2,23 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  p {
-    @apply mb-3;
-  }
-
-  ul {
-    @apply list-disc;
-  }
-
-  ol {
-    @apply list-decimal;
-  }
-
-  ul, ol {
-    @apply my-3 pl-10;
-  }
-}
 
 @layer components {
   .btn {
@@ -30,6 +13,15 @@
   .link {
     @apply text-blue-600 hover:underline;
   }
+}
+
+:root {
+  --bulma-weight-light: 100;
+  --bulma-weight-normal: 300;
+}
+
+body {
+  --bulma-body-family: SF Pro, Segoe UI, Roboto, Oxygen, Ubuntu, Helvetica Neue, Helvetica, Arial, sans-serif;
 }
 
 .grecaptcha-badge { visibility: hidden; }

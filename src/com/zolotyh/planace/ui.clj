@@ -27,6 +27,10 @@
                      :image "https://clojure.org/images/clojure-logo-120b.png"})
        (update :base/head (fn [head]
                             (concat [[:link {:rel "stylesheet" :href (static-path "/css/main.css")}]
+                                     [:link {:rel "stylesheet", :href (static-path "/css/inter.css")}]
+                                     [:link {:rel "stylesheet", :href (static-path "/css/bulma.min.css")}]
+                                     [:link {:rel "stylesheet", :href (static-path "/css/main.css")}]
+                                     [:link {:rel "stylesheet", :href (static-path "/css/fontawesome.min.css")}]
                                      [:script {:src (static-path "/js/htmx.min.js")}]
                                      [:script {:src (static-path "/js/idiomorph-ext.min.js")}]
                                      [:script {:src (static-path "/js/ws.js")}]
