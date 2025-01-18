@@ -15,7 +15,8 @@
   (let [rooms (:user/rooms user)
         id (:xt/id user)
         room-id (random-uuid)
-        vote (schema/vote-defaults room-id)
+        vote-id (random-uuid)
+        vote (schema/vote-defaults vote-id room-id)
         room (schema/room-defaults {:owner-id id
                                     :room-id room-id
                                     :vote vote

@@ -1,6 +1,7 @@
 (ns com.zolotyh.planace.poker.ctrls
   (:require
    [cheshire.core :as cheshire]
+   [clojure.tools.logging :as log]
    [com.biffweb :as biff]
    [com.zolotyh.planace.poker.db :as db]
    [com.zolotyh.planace.poker.ids :as ids]
@@ -8,9 +9,9 @@
    [com.zolotyh.planace.poker.ui :as ui]
    [com.zolotyh.planace.poker.utils.http :as http-utils]
    [reitit.core :as r]
-   [xtdb.api :as xt]
+   [ring.adapter.jetty9 :as jetty]
    [rum.core :as rum]
-   [ring.adapter.jetty9 :as jetty]))
+   [xtdb.api :as xt]))
 
 (def test-data {:votes
                 (->>
@@ -69,7 +70,8 @@
 (defn room-toggle [{:keys [path-params biff/db] :as ctx}]
   (let [room-id (parse-uuid (:room-id path-params))
         room  (xt/entity db room-id)
-        updated-room (update-in room [:room/active-vote :vote/closed?]  not)]
+        updated-room (update-in room [:room/active-vote :vote/closed?]  not)
+        updated-vote (:room/active-vote updated-room)]
     (notify-about-room-updates ctx updated-room)
     (biff/submit-tx ctx
                     [(merge
@@ -79,7 +81,8 @@
                      (merge
                       {:db/op :update
                        :db/doc-type :vote}
-                      (:room/active-vote updated-room))])
+                      updated-vote)])
+
     (ui/room {:room updated-room, :ctx ctx})))
 
 

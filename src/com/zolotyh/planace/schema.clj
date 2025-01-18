@@ -20,8 +20,8 @@
       [:key :string]
       [:val :int]]]]])
 
-(defn vote-defaults [room-id]
-  {:xt/id (random-uuid)
+(defn vote-defaults [vote-id room-id]
+  {:xt/id vote-id
    :vote/room room-id
    :vote/closed? true
    :vote/results []
