@@ -4,6 +4,7 @@
    [com.biffweb :as biff]
    [com.zolotyh.planace.poker.ids :as ids]
    [com.zolotyh.planace.poker.path-ids :as paths-ids]
+   [com.zolotyh.planace.poker.ui.cards :as cards]
    [com.zolotyh.planace.poker.utils.url :as url-utils]
    [com.zolotyh.planace.poker.voting :as voting]
    [com.zolotyh.planace.ui :as ui]
@@ -14,27 +15,13 @@
    [:a {:href "test" :hx-post "test" :hx-trigger "click"}
     (cheshire/generate-string  item {:pretty true})]])
 
-(defn results [votes]
-  [:<>
-   [:h2 "results"]
-   [:ul (map results-item votes)]])
-
-(defn voting-item [{:keys [reitit.core/router path-params]} item]
-  (let [room-id (:room-id path-params)
-        url (:path
-             (r/match-by-name router paths-ids/vote {:room-id room-id}))]
-    [:li
-     [:a {:hx-post url
-          :hx-target ids/room-id
-          :hx-vals (cheshire/generate-string {:val (:val item) :key (:key item)})
-          :hx-trigger "click"
-          :href url} (cheshire/generate-string item {:pretty true})]]))
-
-(defn voting [ctx options]
-  [:<>
-   [:h2 "voting"]
-   [:ul
-    (map  #(voting-item ctx %) options)]])
+(defn results [votes room]
+  (if (get-in room [:room/active-vote :vote/closed?])
+    [:<>
+     [:h2 "open"]
+     [:ul (map results-item votes)]]
+    [:<>
+     [:h2 "closed"]]))
 
 (defn room-create-form [{:keys [path]}]
   (biff/form
@@ -65,7 +52,7 @@
                    active-vote)
         toggle-match (r/match-by-name router paths-ids/toggle {:room-id (:xt/id room)})
         toggle-path (:path toggle-match)]
-    [:div {:id ids/room}
+    [:div {:id ids/room :hx-swap "morph"}
      [:pre (cheshire/generate-string room)]
      [:h1
       title]
@@ -74,18 +61,19 @@
       [:input {:type "text" :name "title" :class "input"}]
       [:button {:class "button"} "Submit"])
 
-     [:h3 {:hx-post toggle-path :hx-trigger :click :hx-target ids/room-id} (if closed? true false)]
+     [:button {:class (str "button " (if closed? "is-primary" ""))
+               :hx-post toggle-path
+               :hx-trigger :click
+               :hx-target ids/room-id} (if closed? "Close" "Open")]
+
      [:p (random-uuid)]
 
-     [:pre
-      (cheshire/generate-string sequences)]
-
-     (voting ctx sequences)
-     (results votes)]))
+     (cards/voting ctx sequences)
+     (results votes room)]))
 
 (defn with-ws-connection [elem url]
   [:div {:ws-connect url
-         :hx-ext "ws"}
+         :hx-ext "ws" :hx-swap "morph"}
    elem])
 
 (defn room-page [{:keys [ctx] :as params}]
