@@ -1,8 +1,6 @@
 (ns com.zolotyh.planace.poker.ctrls
   (:require
    [cheshire.core :as cheshire]
-   [clojure.tools.logging :as log]
-   [com.biffweb :as biff]
    [com.zolotyh.planace.poker.db :as db]
    [com.zolotyh.planace.poker.ids :as ids]
    [com.zolotyh.planace.poker.path-ids :as paths-ids]
@@ -67,23 +65,8 @@
       (jetty/send! con
                    (rum/render-static-markup (ui/room (merge test-data {:room room, :ctx ctx})))))))
 
-(defn room-toggle [{:keys [path-params biff/db] :as ctx}]
-  (let [room-id (parse-uuid (:room-id path-params))
-        room  (xt/entity db room-id)
-        updated-room (update-in room [:room/active-vote :vote/closed?]  not)
-        updated-vote (:room/active-vote updated-room)]
-    (notify-about-room-updates ctx updated-room)
-    (biff/submit-tx ctx
-                    [(merge
-                      {:db/op :update
-                       :db/doc-type :room}
-                      updated-room)
-                     (merge
-                      {:db/op :update
-                       :db/doc-type :vote}
-                      updated-vote)])
-
+(defn room-toggle [ctx]
+  (let [updated-room
+        (db/update-in-room ctx [:room/active-vote :vote/closed?] not)]
+    (notify-about-room-updates ctx update-room)
     (ui/room {:room updated-room, :ctx ctx})))
-
-
-

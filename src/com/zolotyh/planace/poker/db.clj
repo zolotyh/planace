@@ -1,7 +1,6 @@
 (ns com.zolotyh.planace.poker.db
   (:require
    [com.biffweb :as biff]
-   [com.zolotyh.planace.poker.ui :as ui]
    [com.zolotyh.planace.schema :as schema]
    [xtdb.api :as xt]))
 
@@ -31,8 +30,18 @@
                                   :user/rooms new-rooms})])
     room))
 
-(defn update-room [{:keys [biff/db path-params params]}]
-  (let [room-id (parse-uuid (:room-id path-params))]
-    (xt/submit-tx db [[::xt/put {:xt/id room-id :msg/title (:title params)}]])
-    (ui/room-page (xt/entity db room-id))))
-
+(defn update-in-room [{:keys [path-params biff/db] :as ctx} path update-fn]
+  (let [room-id (parse-uuid (:room-id path-params))
+        room  (xt/entity db room-id)
+        updated-room (update-in room path update-fn)
+        updated-vote (:room/active-vote updated-room)]
+    (biff/submit-tx ctx
+                    [(merge
+                      {:db/op :update
+                       :db/doc-type :room}
+                      updated-room)
+                     (merge
+                      {:db/op :update
+                       :db/doc-type :vote}
+                      updated-vote)])
+    updated-room))
