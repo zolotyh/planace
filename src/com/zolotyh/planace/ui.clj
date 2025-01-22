@@ -1,12 +1,15 @@
 (ns com.zolotyh.planace.ui
-  (:require [cheshire.core :as cheshire]
-            [clojure.java.io :as io]
-            [com.zolotyh.planace.settings :as settings]
-            [com.biffweb :as biff]
-            [ring.middleware.anti-forgery :as csrf]
-            [ring.util.response :as ring-response]
-            [rum.core :as rum]
-            [com.zolotyh.planace.poker.ids :as ids]))
+  (:require
+   [cheshire.core :as cheshire]
+   [clojure.java.io :as io]
+   [com.biffweb :as biff]
+   [com.zolotyh.planace.poker.ids :as ids]
+   [com.zolotyh.planace.poker.ui.footer :as footer]
+   [com.zolotyh.planace.poker.ui.header :as header]
+   [com.zolotyh.planace.settings :as settings]
+   [ring.middleware.anti-forgery :as csrf]
+   [ring.util.response :as ring-response]
+   [rum.core :as rum]))
 
 (defn static-path [path]
   (if-some [last-modified (some-> (io/resource (str "public" path))
@@ -49,7 +52,22 @@
     (when (bound? #'csrf/*anti-forgery-token*)
       {:hx-headers (cheshire/generate-string
                     {:x-csrf-token csrf/*anti-forgery-token*})})
-    [:div {:id ids/root :hx-ext "morph"} body]]))
+    [:div {:class "flex flex-col h-screen justify-between min-h-screen"}
+     (header/header-template {})
+     [:div {:class "flex-grow.px-12.pb-40"
+            :id ids/root :hx-ext "morph"} body]
+     (footer/footer-template {})]]))
+
+; (defn main-template [main]
+;   [:main.flex-grow.px-12.pb-40
+;    main])
+;
+; (defn container [& content]
+;   [:html
+;    [:head
+;     (head/head {:title "hello"})]
+;    [:body.flex.flex-col.h-screen.justify-between.min-h-screen
+;     content]])
 
 (defn on-error [{:keys [status _ex] :as ctx}]
   {:status status
