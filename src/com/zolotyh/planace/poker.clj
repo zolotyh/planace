@@ -4,10 +4,10 @@
    [com.zolotyh.planace.poker.ctrls :as ctrls]
    [com.zolotyh.planace.poker.path-ids :as paths-ids]
    [com.zolotyh.planace.poker.ws :as ws]
-   [com.zolotyh.planace.templates.base :as tpl]))
+   [com.zolotyh.planace.templates.main :as tpl]))
 
 (defn empty [ctx]
-  (tpl/base ctx "hello"))
+  (tpl/main ctx {:main "main"}))
 
 (def module {:routes ["/poker" {:middleware [mid/wrap-signed-in]}
                       ["/to-delete"   {:name "to-delete"

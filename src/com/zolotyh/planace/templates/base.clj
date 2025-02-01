@@ -1,10 +1,14 @@
 (ns com.zolotyh.planace.templates.base
   (:require
+   [cheshire.core :as cheshire]
+   [com.zolotyh.planace.settings :as settings]
    [com.zolotyh.planace.templates.utils :as utils]
-   [com.zolotyh.planace.settings :as settings]))
+   [ring.middleware.anti-forgery :as csrf]))
 
 (defn- body [_ & content]
-  [:body content])
+  [:body {:hx-headers (when (bound? #'csrf/*anti-forgery-token*)
+                        (cheshire/generate-string {:x-csrf-token csrf/*anti-forgery-token*}))
+          :class "flex flex-col h-screen justify-between min-h-screen"} content])
 
 (defn- og-comp [{:keys [title type url image image-alt]}]
   [:<>
