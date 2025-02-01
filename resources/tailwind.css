@@ -27,6 +27,14 @@ body {
 .grecaptcha-badge { visibility: hidden; }
 
 
+:root {
+  --bulma-body-overflow-y: auto;
+}
+
+html, body {
+  --bulma-body-overflow-y: auto;
+}
+
 @media (prefers-color-scheme: dark) {
   ::-webkit-scrollbar-thumb {
     background-color: var(--bulma-dark);
@@ -58,3 +66,6 @@ body {
 }
 
 
+.component {
+  padding: var(--bulma-hero-body-padding);
+}
