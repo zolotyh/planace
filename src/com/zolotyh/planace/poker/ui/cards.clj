@@ -11,8 +11,8 @@
              (r/match-by-name router paths-ids/vote {:room-id room-id}))]
     [:li {:class
           (if (:active item)
-            "has-background-primary-25 has-text-primary-25-invert box aspect-[63/88] cursor-pointer max-w-23 text-4xl flex items-center justify-center font-extralight -translate-y-2 p-0"
-            "box aspect-[63/88] cursor-pointer max-w-23 text-4xl flex items-center justify-center font-extralight p-0")}
+            "transition duration-300 has-background-primary-25 has-text-primary-25-invert box aspect-[63/88] cursor-pointer max-w-23 text-4xl flex items-center justify-center font-extralight -translate-y-2 p-0"
+            "transition duration-300 box aspect-[63/88] cursor-pointer max-w-23 text-4xl flex items-center justify-center font-extralight p-0")}
      [:a {:class "block w-full h-full flex items-center justify-center"
           :hx-post url
           :hx-target ids/room-id

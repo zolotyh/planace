@@ -58,17 +58,6 @@
             :id ids/root :hx-ext "morph"} body]
      (footer/footer-template {})]]))
 
-; (defn main-template [main]
-;   [:main.flex-grow.px-12.pb-40
-;    main])
-;
-; (defn container [& content]
-;   [:html
-;    [:head
-;     (head/head {:title "hello"})]
-;    [:body.flex.flex-col.h-screen.justify-between.min-h-screen
-;     content]])
-
 (defn on-error [{:keys [status _ex] :as ctx}]
   {:status status
    :headers {"content-type" "text/html"}

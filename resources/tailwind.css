@@ -25,3 +25,36 @@ body {
 }
 
 .grecaptcha-badge { visibility: hidden; }
+
+
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--bulma-dark);
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: var(--bulma-grey-darker);
+  }
+}
+
+
+/* Scrollbar for WebKit Browsers (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--bulma-primary);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--bulma-background);
+}
+
+/* Firefox Scrollbar */
+* {
+  scrollbar-color: var(--bulma-primary) var(--bulma-background);
+}
+
+
