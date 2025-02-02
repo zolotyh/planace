@@ -8,7 +8,7 @@
 (defn- body [_ & content]
   [:body {:hx-headers (when (bound? #'csrf/*anti-forgery-token*)
                         (cheshire/generate-string {:x-csrf-token csrf/*anti-forgery-token*}))
-          :class "flex flex-col h-screen justify-between min-h-screen"} content])
+          :class "root min-h-screen"} content])
 
 (defn- og-comp [{:keys [title type url image image-alt]}]
   [:<>
@@ -38,9 +38,7 @@
 
 (defn- styles-comp []
   [:<>
-   [:link {:rel "stylesheet" :href  (utils/static-path "/css/main.css")}]
    [:link {:rel "stylesheet", :href (utils/static-path "/css/inter.css")}]
-   [:link {:rel "stylesheet", :href (utils/static-path "/css/bulma.min.css")}]
    [:link {:rel "stylesheet", :href (utils/static-path "/css/main.css")}]
    [:link {:rel "stylesheet", :href (utils/static-path "/css/fontawesome.min.css")}]])
 

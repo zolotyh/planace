@@ -1,18 +1,11 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@layer base, tailwind, custom;
 
-
-@layer components {
-  .btn {
-    @apply bg-blue-500 hover:bg-blue-700 text-center py-2 px-4 rounded disabled:opacity-50 text-white;
-  }
+@layer base {
+  @import "./public/css/bulma.min.css";
 }
 
-@layer utilities {
-  .link {
-    @apply text-blue-600 hover:underline;
-  }
+@layer tailwind {
+  @import "tailwindcss";
 }
 
 :root {
@@ -21,7 +14,7 @@
 }
 
 body {
-  --bulma-body-family: SF Pro, Segoe UI, Roboto, Oxygen, Ubuntu, Helvetica Neue, Helvetica, Arial, sans-serif;
+  --bulma-body-family: SF Pro, Segoe UI, Roboto, Oxygen, Ubuntu, Helvetia Neue, Helvetica, Arial, sans-serif;
 }
 
 .grecaptcha-badge { visibility: hidden; }
@@ -66,6 +59,10 @@ html, body {
 }
 
 
-.component {
-  padding: var(--bulma-hero-body-padding);
+.root {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: calc(var(--spacing)* 16) 1fr calc(var(--spacing)* 16);
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
 }
