@@ -3,7 +3,8 @@
    [com.biffweb :as biff]
    [com.zolotyh.planace.middleware :as mid]
    [com.zolotyh.planace.settings :as settings]
-   [com.zolotyh.planace.ui :as ui]))
+   [com.zolotyh.planace.ui :as ui]
+   [com.zolotyh.planace.ctrls :as ctrls]))
 
 (def email-disabled-notice
   [:.text-sm.mt-3.bg-blue-100.rounded.p-2
@@ -164,8 +165,9 @@
      "Send another code"])))
 
 (def module
-  {:routes [["" {:middleware [mid/wrap-redirect-signed-in]}
-             ["/"                  {:get home-page}]]
+  {:routes [["" {:middleware [mid/wrap-redirect-signed-in]}]
+            ["/"                  {:get home-page}]
+            ["/test" {:get ctrls/main}]
             ["/link-sent"          {:get link-sent}]
             ["/verify-link"        {:get verify-email-page}]
             ["/signin"             {:get signin-page}]
